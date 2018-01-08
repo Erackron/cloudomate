@@ -30,8 +30,8 @@ class Pulseservers(SolusvmHoster):
     clientarea_url = 'https://www.pulseservers.com/billing/clientarea.php'
     gateway = coinbase
 
-    def __init__(self):
-        super(Pulseservers, self).__init__()
+    def __init__(self, settings):
+        super(Pulseservers, self).__init__(settings)
 
     def start(self):
         """

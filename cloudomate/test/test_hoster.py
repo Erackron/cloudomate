@@ -1,6 +1,8 @@
 import unittest
 
-import cloudomate.hoster.vps.vps_hoster
+import requests
+
+from cloudomate.hoster.hoster import Hoster
 from cloudomate import wallet
 from cloudomate.hoster.vps.blueangelhost import BlueAngelHost
 from cloudomate.hoster.vps.ccihosting import CCIHosting
@@ -9,6 +11,7 @@ from cloudomate.hoster.vps.legionbox import LegionBox
 from cloudomate.hoster.vps.linevast import LineVast
 from cloudomate.hoster.vps.pulseservers import Pulseservers
 from cloudomate.hoster.vps.undergroundprivate import UndergroundPrivate
+from cloudomate.hoster.vps.vps_hoster import VpsHoster
 from cloudomate.hoster.vps.vpsoption import VpsOption
 from mock.mock import MagicMock
 from parameterized import parameterized
@@ -32,23 +35,24 @@ class TestHosters(unittest.TestCase):
 
     @parameterized.expand(providers)
     def test_hoster_options(self, hoster):
-        options = hoster().start()
+        options = hoster(None).start()
         self.assertTrue(len(list(options)) > 0)
 
 
 class TestHosterAbstract(unittest.TestCase):
     def test_hoster_options(self):
-        hoster = cloudomate.hoster.vps.hoster.Hoster()
-        self.assertRaises(NotImplementedError, hoster.options)
+        hoster = Hoster(None)
+        self.assertRaises(NotImplementedError, hoster.get_options)
 
     def test_hoster_purchase(self):
-        hoster = cloudomate.hoster.vps.hoster.Hoster()
+        hoster = Hoster(None)
         vps_option = VpsOption(name='', price='', cpu='', currency='USD', ram='', storage='', bandwidth='',
                                connection='', purchase_url='')
-        self.assertRaises(NotImplementedError, hoster.purchase, *(None, vps_option, None))
+        self.assertRaises(NotImplementedError, hoster.purchase, *(None, vps_option))
 
+    # TODO: Move to eventual VpsHoster test
     def test_hoster_print(self):
-        hoster = cloudomate.hoster.vps.hoster.Hoster()
+        hoster = VpsHoster(None)
         options = [self._create_option()]
         hoster.configurations = options
         wallet.get_rates = MagicMock(return_value={'USD': 1.1})
@@ -59,13 +63,12 @@ class TestHosterAbstract(unittest.TestCase):
         hoster.gateway.estimate_price.assert_called_once()
 
     def test_create_browser(self):
-        hoster = cloudomate.hoster.vps.hoster.Hoster()
+        hoster = Hoster(None)
         browser = hoster._create_browser()
-        for header in browser.addheaders:
-            if 'Mozilla/5.0' in header[1]:
-                return True
-        self.fail('No User-agent set in browser')
+        if browser.session.headers['user-agent'] == requests.utils.default_user_agent():
+            self.fail('No Custom User-agent set in browser')
 
+    # TODO: Move to eventual VpsHosterTest
     @staticmethod
     def _create_option():
         return VpsOption(

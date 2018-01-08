@@ -29,8 +29,8 @@ class CrownCloud(SolusvmHoster):
     clientarea_url = 'https://crowncloud.net/clients/clientarea.php'
     gateway = cloudomate.gateway.bitpay
 
-    def __init__(self):
-        super(CrownCloud, self).__init__()
+    def __init__(self, settings):
+        super(CrownCloud, self).__init__(settings)
 
     def register(self, user_settings, vps_option):
         """

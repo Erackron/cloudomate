@@ -26,8 +26,8 @@ class LegionBox(SolusvmHoster):
     clientarea_url = 'https://legionbox.com/billing/clientarea.php'
     gateway = coinbase
 
-    def __init__(self):
-        super(LegionBox, self).__init__()
+    def __init__(self, settings):
+        super(LegionBox, self).__init__(settings)
 
     def start(self):
         self._browser.open("https://legionbox.com/virtual-servers/")

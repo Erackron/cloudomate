@@ -30,8 +30,8 @@ class LineVast(SolusvmHoster):
     clientarea_url = 'https://panel.linevast.de/clientarea.php'
     gateway = bitpay
 
-    def __init__(self):
-        super(LineVast, self).__init__()
+    def __init__(self, settings):
+        super(LineVast, self).__init__(settings)
 
     def register(self, user_settings, vps_option):
         """

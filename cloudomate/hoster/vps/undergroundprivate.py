@@ -28,8 +28,8 @@ class UndergroundPrivate(SolusvmHoster):
     ]
     gateway = coinbase
 
-    def __init__(self):
-        super(UndergroundPrivate, self).__init__()
+    def __init__(self, settings):
+        super(UndergroundPrivate, self).__init__(settings)
 
     def get_status(self, user_settings):
         clientarea = ClientArea(self._browser, self.clientarea_url, user_settings)

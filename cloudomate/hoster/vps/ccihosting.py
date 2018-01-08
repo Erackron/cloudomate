@@ -27,8 +27,8 @@ class CCIHosting(SolusvmHoster):
     ]
     gateway = coinbase
 
-    def __init__(self):
-        super(CCIHosting, self).__init__()
+    def __init__(self, settings):
+        super(CCIHosting, self).__init__(settings)
 
     def register(self, user_settings, vps_option):
         """

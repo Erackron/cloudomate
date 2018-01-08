@@ -29,8 +29,8 @@ class BlueAngelHost(SolusvmHoster):
     client_data_url = 'https://www.billing.blueangelhost.com/modules/servers/solusvmpro/get_client_data.php'
     gateway = bitpay
 
-    def __init__(self):
-        super(BlueAngelHost, self).__init__()
+    def __init__(self, settings):
+        super(BlueAngelHost, self).__init__(settings)
 
     def register(self, user_settings, vps_option):
         """
