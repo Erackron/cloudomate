@@ -11,7 +11,10 @@ address =
 city = 
 state = 
 countryCode = 
-zipcode = 
+zipcode =
+
+[payment]
+walletpath =
 
 [Server]
 rootpw = 

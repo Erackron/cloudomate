@@ -10,7 +10,7 @@ from cloudomate.hoster.vps.linevast import LineVast
 from cloudomate.hoster.vps.pulseservers import Pulseservers
 from cloudomate.hoster.vps.undergroundprivate import UndergroundPrivate
 from cloudomate.hoster.vpn.azirevpn import AzireVpn
-from cloudomate.util.config import UserOptions
+from cloudomate.util.settings import Settings
 from cloudomate.util.fakeuserscraper import UserScraper
 from cloudomate.wallet import Wallet
 from cloudomate import wallet as wallet_util
@@ -81,7 +81,8 @@ def add_parser_list(subparsers, provider_type):
 
 def add_parser_options(subparsers, provider_type):
     parser_options = subparsers.add_parser("options", help="List %s provider configurations" % provider_type.upper())
-    parser_options.add_argument("provider", help="The specified %s provider" % provider_type.upper(), choices=providers[provider_type])
+    parser_options.add_argument("provider", help="The specified %s provider" % provider_type.upper(),
+                                choices=providers[provider_type])
     parser_options.set_defaults(func=options)
 
 
@@ -241,26 +242,29 @@ def purchase(args):
 def _check_provider(provider, config):
     return config.verify_options(provider.get_required_settings())
 
+
 def _merge_random_user_data(user_settings):
     usergenerator = UserScraper()
     randomuser = usergenerator.get_user()
-    for key in randomuser.keys():
-        user_settings.config[key] = randomuser[key]
+    for section in randomuser.keys():
+        for key in randomuser[section].keys():
+            user_settings.put(section, key)
+
 
 def _get_user_settings(args, provider=None):
-    user_settings = UserOptions()
+    user_settings = Settings()
     if 'config' in vars(args):
-        user_settings.read_settings(filename=args.config, provider=provider)
+        user_settings.read_settings(filename=args.config)
     else:
-        user_settings.read_settings(provider=provider)
-    _merge_arguments(user_settings, vars(args))
+        user_settings.read_settings()
+    _merge_arguments(user_settings, provider, vars(args))
     return user_settings
 
 
-def _merge_arguments(config, args):
+def _merge_arguments(config, provider, args):
     for key in args:
         if args[key] is not None:
-            config.put(key, args[key])
+            config.put(provider, key, args[key])
 
 
 def _purchase_vps(provider, user_settings, vps_option):
@@ -280,7 +284,7 @@ def _purchase_vps(provider, user_settings, vps_option):
         str(vps_option.bandwidth),
         str(vps_option.price))))
 
-    if 'walletpath' in user_settings.config and user_settings.get("noconfirm") is True:
+    if user_settings.has_key('payment', 'walletpath') and user_settings.get("noconfirm") is True:
         choice = True
     else:
         choice = _confirmation("Purchase this option?", default="no")
@@ -295,7 +299,7 @@ def _purchase_vpn(provider, user_settings):
     options = provider.get_options()
     _print_option_vpn(provider, options[0])
 
-    if 'walletpath' in user_settings.config and user_settings.get("noconfirm") is True:
+    if user_settings.has_key('payment', 'walletpath') and user_settings.get("noconfirm") is True:
         choice = True
     else:
         choice = _confirmation("Purchase this option?", default="no")
@@ -355,7 +359,7 @@ def _list_providers(provider_type):
 def _list_provider_types():
     print("Provider Types:")
     for provider_type in types:
-        print(("   {:15}" % provider_type))
+        print(("   {:15}".format(provider_type)))
 
 
 def _options_vps(p):
@@ -374,26 +378,26 @@ def _options_vpn(provider):
         _print_option_vpn(provider, option)
 
 
-def _register_vps(p, vps_option, user_settings):
+def _register_vps(p, vps_option, settings):
     # For now use standard wallet implementation through Electrum
     # If wallet path is defined in config, use that.
-    if 'walletpath' in user_settings.config:
-        wallet = Wallet(wallet_path=user_settings.get('walletpath'))
+    if 'walletpath' in settings.config:
+        wallet = Wallet(wallet_path=settings.get('Electrum', 'walletpath'))
     else:
         wallet = Wallet()
 
-    p.purchase(user_settings=user_settings, options=vps_option, wallet=wallet)
+    p.purchase(user_settings=settings, options=vps_option, wallet=wallet)
 
 
-def _register_vpn(p, user_settings, option):
+def _register_vpn(p, settings, option):
     # For now use standard wallet implementation through Electrum
     # If wallet path is defined in config, use that.
-    if 'walletpath' in user_settings.config:
-        wallet = Wallet(wallet_path=user_settings.get('walletpath'))
+    if 'walletpath' in settings.config:
+        wallet = Wallet(wallet_path=settings.get('Electrum', 'walletpath'))
     else:
         wallet = Wallet()
 
-    provider = p(user_settings)
+    provider = p(settings)
     provider.purchase(wallet, option)
 
 
@@ -430,6 +434,7 @@ def _print_info_vps(info_dict):
     for key in info_dict:
         print((row_format.format(key, info_dict[key])))
 
+
 def _print_info_vpn(info):
     credentials = "credentials.conf"
     header = "=" * 20
@@ -446,6 +451,7 @@ def _print_info_vpn(info):
     print(ovpn)
     print(header)
 
+
 def _print_option_vpn(provider, option):
     bandwidth = "Unlimited" if option.bandwidth == sys.maxsize else option.bandwidth
     speed = "Unlimited" if option.speed == sys.maxsize else option.speed
@@ -461,6 +467,7 @@ def _print_option_vpn(provider, option):
     row = "{:18}" * 6
     print(row.format("Name", "Protocol", "Bandwidth", "Speed", "Est. Price (mBTC)", "Price (USD)"))
     print(row.format(option.name, option.protocol, bandwidth, speed, str(estimate), str(option.price)))
+
 
 if __name__ == '__main__':
     execute()

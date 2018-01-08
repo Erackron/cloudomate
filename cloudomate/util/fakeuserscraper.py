@@ -42,20 +42,21 @@ class UserScraper:
             config['firstname'] = attrs['Full Name'].split('\xa0')[0]
             config['lastname'] = attrs['Full Name'].split('\xa0')[-1]
 
-        # Map the possible user attributes to their config names
+        # Map the possible user attributes to their config names and sections
         mapping = {
-            'Street': 'address',
-            'City': 'city',
-            'State Full': 'state',
-            'Zip Code': 'zipcode',
-            'Phone Number': 'phoneNumber',
-            'Company': 'companyName',
-            'Username': 'username',
+            'Street': ('address', 'address'),
+            'City': ('address', 'city'),
+            'State Full': ('address', 'state'),
+            'Zip Code': ('address', 'zipcode'),
+            'Phone Number': ('user', 'phoneNumber'),
+            'Company': ('user', 'companyName'),
+            'Username': ('user', 'username'),
         }
 
         for attr in attrs.keys():
             if attr in mapping.keys():
-                config[mapping[attr]] = attrs[attr]
+                section, key = mapping[attr]
+                config[section][key] = attrs[attr]
         return config
 
     def _get_attribute(self, attribute):
