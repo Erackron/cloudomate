@@ -67,8 +67,6 @@ class Settings(object):
         :return: The desired settings value
         """
         for section in sections:
-            if not self.settings.has_section(section):
-                continue
             if self.settings.has_option(section, key):
                 return self.settings.get(section, key)
         print("Setting {} does not exist in any of the given sections".format(key))
@@ -85,8 +83,6 @@ class Settings(object):
 
     def has_key_merge(self, sections, key):
         for section in sections:
-            if not self.settings.has_section(section):
-                continue
             if self.settings.has_option(section, key):
                 return True
         raise False
