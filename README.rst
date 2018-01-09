@@ -71,23 +71,23 @@ location for the configuration file is `$HOME/.config/cloudomate.cfg`.
 
 A configuration file looks like this ::
 
-   [User]
+   [user]
    email = 
-   firstName = 
-   lastName = 
-   companyName = 
-   phoneNumber = 
+   firstname =
+   lastname =
+   companyname =
+   phonenumber =
    password = 
 
-   [Address]
+   [address]
    address = 
    city = 
    state = 
-   countryCode = 
+   countrycode =
    zipcode = 
 
-   [Server]
-   rootpw = 
+   [server]
+   root_password =
    ns1 = 
    ns2 = 
    hostname = 

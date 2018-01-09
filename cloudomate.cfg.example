@@ -17,7 +17,7 @@ zipcode =
 walletpath =
 
 [Server]
-rootpw = 
+root_password =
 ns1 = 
 ns2 = 
 hostname = 

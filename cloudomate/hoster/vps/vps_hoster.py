@@ -4,7 +4,7 @@ from cloudomate.hoster.hoster import Hoster
 from collections import namedtuple
 
 
-VpsConfiguration = namedtuple('VpsConfiguration', ['ip', 'password'])
+VpsConfiguration = namedtuple('VpsConfiguration', ['ip', 'root_password'])
 VpsOption = namedtuple('VpsOption', ['name',
                                      'cores',
                                      'memory',          # Memory in GB
@@ -95,15 +95,8 @@ class VpsHoster(Hoster):
         print('Done purchasing')
         return transaction_hash
 
+    @abstractmethod
     def register(self, user_settings, vps_option):
-        pass
-
-    def get_status(self, user_settings):
-        """
-        Get the status of purchased services for specified provider.
-        :param user_settings: the user settings used to login.
-        :return: 
-        """
         pass
 
     def set_rootpw(self, user_settings):
