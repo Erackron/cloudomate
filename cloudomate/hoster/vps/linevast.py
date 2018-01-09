@@ -7,6 +7,7 @@ import urllib.request
 from collections import OrderedDict
 
 from cloudomate.gateway import bitpay
+from cloudomate.gateway.bitpay import BitPay
 from cloudomate.hoster.vps.solusvm_hoster import SolusvmHoster
 from cloudomate.hoster.vps.clientarea import ClientArea
 from cloudomate.hoster.vps.vpsoption import VpsOption
@@ -28,7 +29,7 @@ class LineVast(SolusvmHoster):
         'password',
     ]
     clientarea_url = 'https://panel.linevast.de/clientarea.php'
-    gateway = bitpay
+    gateway = BitPay
 
     def __init__(self, settings):
         super(LineVast, self).__init__(settings)
@@ -50,7 +51,7 @@ class LineVast(SolusvmHoster):
         form = self._browser.select_form(selector='form#frmCheckout')
         form['acceptdomainwiderruf1'] = True
         form['acceptdomainwiderruf2'] = True
-        self.user_form(self._browser, user_settings, self.gateway.name)
+        self.user_form(self._browser, user_settings, self.gateway.get_name())
 
         self._browser.select_form(nr=0)  # Go to payment form
         self._browser.submit_selected()

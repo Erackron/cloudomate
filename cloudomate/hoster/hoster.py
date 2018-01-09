@@ -1,11 +1,10 @@
-import abc
-from abc import abstractmethod
+from abc import abstractmethod, ABCMeta
 
 from fake_useragent import UserAgent
 from mechanicalsoup import StatefulBrowser
 
 
-class Hoster(metaclass=abc.ABCMeta):
+class Hoster(metaclass=ABCMeta):
     def __init__(self, settings):
         self._browser = self._create_browser()
         self._settings = settings

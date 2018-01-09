@@ -5,6 +5,7 @@ from collections import OrderedDict
 from bs4 import BeautifulSoup
 
 from cloudomate.gateway import bitpay
+from cloudomate.gateway.bitpay import BitPay
 from cloudomate.hoster.hoster import Hoster
 from cloudomate.hoster.vps.solusvm_hoster import SolusvmHoster
 from cloudomate.hoster.vps.clientarea import ClientArea
@@ -24,7 +25,7 @@ class CrownCloud(SolusvmHoster):
 
     @staticmethod
     def get_gateway():
-        return bitpay
+        return BitPay
 
     @staticmethod
     def get_metadata():
@@ -109,10 +110,10 @@ class CrownCloud(SolusvmHoster):
         submit = soup.select('button#btnCompleteOrder')[0]
         form.choose_submit(submit)
 
-        self.user_form(self._browser, user_settings, self.gateway.name, errorbox_class='errorbox')
+        self.user_form(self._browser, user_settings, self.get_gateway().get_name(), errorbox_class='errorbox')
         self._browser.select_form(nr=0)
         page = self._browser.submit_selected()
-        return self.gateway.extract_info(page.url)
+        return self.get_gateway().extract_info(page.url)
 
     def server_form(self, user_settings):
         """

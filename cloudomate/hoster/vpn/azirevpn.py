@@ -1,5 +1,6 @@
 from cloudomate import wallet as wallet_util
 from cloudomate.gateway import bitpay
+from cloudomate.gateway.bitpay import BitPay
 from cloudomate.hoster.vpn import vpn_hoster
 import datetime
 from forex_python.converter import CurrencyRates
@@ -22,7 +23,7 @@ class AzireVpn(vpn_hoster.VpnHoster):
 
     @staticmethod
     def get_gateway():
-        return bitpay
+        return BitPay
 
     @staticmethod
     def get_metadata():

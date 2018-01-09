@@ -1,6 +1,7 @@
 from collections import OrderedDict
 
 from cloudomate.gateway import coinbase
+from cloudomate.gateway.coinbase import Coinbase
 from cloudomate.hoster.vps.solusvm_hoster import SolusvmHoster
 from cloudomate.hoster.vps.clientarea import ClientArea
 from cloudomate.hoster.vps.vpsoption import VpsOption
@@ -25,7 +26,7 @@ class CCIHosting(SolusvmHoster):
         'hostname',
         'rootpw'
     ]
-    gateway = coinbase
+    gateway = Coinbase
 
     def __init__(self, settings):
         super(CCIHosting, self).__init__(settings)

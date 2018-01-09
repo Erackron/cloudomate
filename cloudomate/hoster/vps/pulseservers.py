@@ -1,6 +1,7 @@
 from collections import OrderedDict
 
 from cloudomate.gateway import coinbase
+from cloudomate.gateway.coinbase import Coinbase
 from cloudomate.hoster.vps.solusvm_hoster import SolusvmHoster
 from cloudomate.hoster.vps.clientarea import ClientArea
 from cloudomate.hoster.vps.vpsoption import VpsOption
@@ -26,7 +27,7 @@ class Pulseservers(SolusvmHoster):
 
     @staticmethod
     def get_gateway():
-        return coinbase
+        return Coinbase
 
     @staticmethod
     def get_metadata():
@@ -185,10 +186,10 @@ class Pulseservers(SolusvmHoster):
         submit = soup.select('input.ordernow')[0]
         form.choose_submit(submit)
 
-        self.user_form(self._browser, user_settings, self.gateway.name, errorbox_class='errorbox')
+        self.user_form(self._browser, user_settings, self.get_gateway().get_name(), errorbox_class='errorbox')
         self._browser.select_form(nr=0)
         page = self._browser.submit_selected()
-        return self.gateway.extract_info(page.url)
+        return self.get_gateway().extract_info(page.url)
 
     def server_form(self, user_settings):
         self.select_form_id(self._browser, 'orderfrm')

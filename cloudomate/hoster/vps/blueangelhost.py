@@ -1,6 +1,7 @@
 import itertools
 
 from cloudomate.gateway import bitpay
+from cloudomate.gateway.bitpay import BitPay
 from cloudomate.hoster.vps.solusvm_hoster import SolusvmHoster
 from cloudomate.hoster.vps.clientarea import ClientArea
 from cloudomate.hoster.vps.vpsoption import VpsOption
@@ -27,7 +28,7 @@ class BlueAngelHost(SolusvmHoster):
     ]
     clientarea_url = 'https://www.billing.blueangelhost.com/clientarea.php'
     client_data_url = 'https://www.billing.blueangelhost.com/modules/servers/solusvmpro/get_client_data.php'
-    gateway = bitpay
+    gateway = BitPay
 
     def __init__(self, settings):
         super(BlueAngelHost, self).__init__(settings)
@@ -48,7 +49,7 @@ class BlueAngelHost(SolusvmHoster):
 
         self._browser.select_form(selector='form[name=orderfrm]')
         self._browser.get_current_form()['customfield[4]'] = 'Google'
-        self.user_form(self._browser, user_settings, self.gateway.name)
+        self.user_form(self._browser, user_settings, self.gateway.get_name())
 
         self._browser.select_form(nr=0)
         self._browser.submit_selected()
