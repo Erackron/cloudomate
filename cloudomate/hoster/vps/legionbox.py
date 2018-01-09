@@ -21,22 +21,30 @@ class LegionBox(SolusvmHoster):
 
     @staticmethod
     def get_metadata():
-        return ("legionbox", "https://legionbox.com/")
+        return "Legionbox", "https://legionbox.com/"
 
     @staticmethod
     def get_required_settings():
-        return [
-        'firstname',
-        'lastname',
-        'email',
-        'address',
-        'city',
-        'state',
-        'zipcode',
-        'phonenumber',
-        'password',
-        'hostname',
-        'rootpw']
+        return {
+            'user': [
+                'firstname',
+                'lastname',
+                'email',
+                'password',
+                'phonenumber',
+            ],
+            'address': [
+                'address',
+                'city',
+                'state',
+                'zipcode',
+            ],
+            'server': [
+                'root_password',
+                'hostname',
+            ]
+
+        }
 
     '''
      Action methods of the Hoster that can be called
