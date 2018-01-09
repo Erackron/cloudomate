@@ -40,16 +40,6 @@ class TestHosters(unittest.TestCase):
 
 
 class TestHosterAbstract(unittest.TestCase):
-    def test_hoster_options(self):
-        hoster = Hoster(None)
-        self.assertRaises(NotImplementedError, hoster.get_options)
-
-    def test_hoster_purchase(self):
-        hoster = Hoster(None)
-        vps_option = VpsOption(name='', price='', cpu='', currency='USD', ram='', storage='', bandwidth='',
-                               connection='', purchase_url='')
-        self.assertRaises(NotImplementedError, hoster.purchase, *(None, vps_option))
-
     # TODO: Move to eventual VpsHoster test
     def test_hoster_print(self):
         hoster = VpsHoster(None)
@@ -63,8 +53,7 @@ class TestHosterAbstract(unittest.TestCase):
         hoster.gateway.estimate_price.assert_called_once()
 
     def test_create_browser(self):
-        hoster = Hoster(None)
-        browser = hoster._create_browser()
+        browser = Hoster._create_browser()
         if browser.session.headers['user-agent'] == requests.utils.default_user_agent():
             self.fail('No Custom User-agent set in browser')
 

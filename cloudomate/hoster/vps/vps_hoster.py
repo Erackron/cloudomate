@@ -1,3 +1,5 @@
+from abc import abstractmethod
+
 from cloudomate.hoster.hoster import Hoster
 from collections import namedtuple
 
@@ -20,28 +22,34 @@ VpsStatus = namedtuple('VpsStatus', ['memory_used',
 
 
 class VpsHoster(Hoster):
+    # TODO: Find out if get_clientarea_url should be implemented as a method
+
+    @abstractmethod
     def get_configuration(self):
         """Get Hoster configuration.
 
         :return: Returns VpsConfiguration for the VPS Hoster instance
         """
-        raise NotImplementedError('Abstract method implementation')
+        pass
 
     @classmethod
+    @abstractmethod
     def get_options(cls):
         """Get Hoster options.
 
         :return: Returns list of VpsOption objects
         """
-        raise NotImplementedError('Abstract method implementation')
+        pass
 
+    @abstractmethod
     def get_status(self):
         """Get Hoster configuration.
 
         :return: Returns VpsStatus of the VPS Hoster instance
         """
-        raise NotImplementedError('Abstract method implementation')
+        pass
 
+    @abstractmethod
     def set_root_password(self, password):
         """Set Hoster root password
 
@@ -68,7 +76,7 @@ class VpsHoster(Hoster):
         return self.configurations
 
     def start(self):
-        raise NotImplementedError('Abstract method implementation')
+        pass
 
     def purchase(self, user_settings, options, wallet):
         """
@@ -88,7 +96,7 @@ class VpsHoster(Hoster):
         return transaction_hash
 
     def register(self, user_settings, vps_option):
-        raise NotImplementedError('Abstract method implementation')
+        pass
 
     def get_status(self, user_settings):
         """
@@ -96,7 +104,7 @@ class VpsHoster(Hoster):
         :param user_settings: the user settings used to login.
         :return: 
         """
-        raise NotImplementedError('Abstract method implementation')
+        pass
 
     def set_rootpw(self, user_settings):
         """
@@ -104,7 +112,7 @@ class VpsHoster(Hoster):
         :param user_settings: the user settings including root password and login data.
         :return: 
         """
-        raise NotImplementedError('Abstract method implementation')
+        pass
 
     def get_ip(self, user_settings):
         """
@@ -112,7 +120,7 @@ class VpsHoster(Hoster):
         :param user_settings: the user settings including root password and login data.
         :return: 
         """
-        raise NotImplementedError('Abstract method implementation')
+        pass
 
     def info(self, user_settings):
         """
@@ -120,7 +128,7 @@ class VpsHoster(Hoster):
         :param user_settings: the user settings including root password and login data.
         :return: 
         """
-        raise NotImplementedError('Abstract method implementation')
+        pass
 
     def print_configurations(self):
         """

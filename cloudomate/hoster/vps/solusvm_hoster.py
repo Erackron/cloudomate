@@ -1,27 +1,34 @@
 import sys
+from abc import abstractmethod
 
 from bs4 import BeautifulSoup
 from cloudomate.hoster.vps.vps_hoster import VpsHoster
 
 
 class SolusvmHoster(VpsHoster):
+    @abstractmethod
     def get_status(self, user_settings):
-        raise NotImplementedError('Abstract method implementation')
+        pass
 
+    @abstractmethod
     def start(self):
-        raise NotImplementedError('Abstract method implementation')
+        pass
 
+    @abstractmethod
     def get_ip(self, user_settings):
-        raise NotImplementedError('Abstract method implementation')
+        pass
 
+    @abstractmethod
     def info(self, user_settings):
-        raise NotImplementedError('Abstract method implementation')
+        pass
 
+    @abstractmethod
     def set_rootpw(self, user_settings):
-        raise NotImplementedError('Abstract method implementation')
+        pass
 
+    @abstractmethod
     def register(self, user_settings, vps_option):
-        raise NotImplementedError('Abstract method implementation')
+        pass
 
     @staticmethod
     def fill_in_server_form(form, user_settings, rootpw=True, nameservers=True, hostname=True):
