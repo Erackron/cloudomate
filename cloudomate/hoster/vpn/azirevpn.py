@@ -40,7 +40,7 @@ class AzireVpn(vpn_hoster.VpnHoster):
     def get_configuration(self):
         response = requests.get(self.CONFIGURATION_URL)
         ovpn = response.text
-        return vpn_hoster.VpnConfiguration(self._settings.get("username"), self._settings.get("password"), ovpn)
+        return vpn_hoster.VpnConfiguration(self._settings.get("user", "username"), self._settings.get("user", "password"), ovpn)
 
     @classmethod
     def get_options(cls):
@@ -116,8 +116,8 @@ class AzireVpn(vpn_hoster.VpnHoster):
     def _login(self):
         self._browser.open(self.LOGIN_URL)
         form = self._browser.select_form()
-        form["username"] = self._settings.get("username")
-        form["password"] = self._settings.get("password")
+        form["username"] = self._settings.get("user","username")
+        form["password"] = self._settings.get("user","password")
         page = self._browser.submit_selected()
 
         if page.url == self.LOGIN_URL:

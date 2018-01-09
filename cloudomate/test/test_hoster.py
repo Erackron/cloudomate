@@ -29,13 +29,8 @@ providers = [
 
 class TestHosters(unittest.TestCase):
     @parameterized.expand(providers)
-    def test_hoster_implements_interface(self, hoster):
-        self.assertTrue('options' in dir(hoster), msg='options is not implemented in {0}'.format(hoster.name))
-        self.assertTrue('purchase' in dir(hoster), msg='purchase is not implemented in {0}'.format(hoster.name))
-
-    @parameterized.expand(providers)
     def test_hoster_options(self, hoster):
-        options = hoster(None).start()
+        options = hoster.get_options()
         self.assertTrue(len(list(options)) > 0)
 
 
