@@ -89,16 +89,7 @@ class AzireVpn(vpn_hoster.VpnHoster):
         page = self._order()
 
         # Make the payment
-        print("Purchasing AzireVPN instance")
-        gateway = self.get_gateway()
-        amount, address = gateway.extract_info(page.url)
-        print(('Paying %s BTC to %s' % (amount, address)))
-        fee = wallet_util.get_network_fee()
-        print(('Calculated fee: %s' % fee))
-        transaction_hash = wallet.pay(address, amount, fee)
-        print('Done purchasing')
-        return transaction_hash
-
+        self.pay(self.get_gateway(), page.url)
 
     '''
     Hoster-specific methods that are needed to perform the actions
