@@ -1,11 +1,11 @@
 from cloudomate.hoster.hoster import Hoster
 from collections import namedtuple
 
-import sys
 
 VpnConfiguration = namedtuple('VpnConfiguration', ['username', 'password', 'ovpn'])
 VpnOption = namedtuple('VpnOption', ['name', 'protocol', 'price', 'bandwidth', 'speed'])  # Price in USD
 VpnStatus = namedtuple('VpnStatus', ['online', 'expiration'])   # Online is a boolean, expiration an ISO datetime
+
 
 class VpnHoster(Hoster):
     def get_configuration(self):

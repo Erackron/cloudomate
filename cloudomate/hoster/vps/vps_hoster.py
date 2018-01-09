@@ -1,12 +1,50 @@
-from cloudomate import wallet as wallet_util
-
 from cloudomate.hoster.hoster import Hoster
+from collections import namedtuple
+
+
+VpsConfiguration = namedtuple('VpsConfiguration', ['ip', 'password'])
+VpsOption = namedtuple('VpsOption', ['cores', 'memory', 'storage', 'bandwidth', 'connection', 'price', 'purchase_url'])  # Price in USD, storage and memory in GB 
+VpsStatus = namedtuple('VpsStatus', ['memory_used', 'storage_used', 'bandwidth_used', 'online', 'expiration'])   # Online is a boolean, expiration an ISO datetime
 
 
 class VpsHoster(Hoster):
-    required_settings = None
-    configurations = None
-    client_area = None
+    def get_configuration(self):
+        """Get Hoster configuration.
+
+        :return: Returns VpsConfiguration for the VPS Hoster instance
+        """
+        raise NotImplementedError('Abstract method implementation')
+
+    @classmethod
+    def get_options(cls):
+        """Get Hoster options.
+
+        :return: Returns list of VpsOption objects
+        """
+        raise NotImplementedError('Abstract method implementation')
+
+    def get_status(self):
+        """Get Hoster configuration.
+
+        :return: Returns VpsStatus of the VPS Hoster instance
+        """
+        raise NotImplementedError('Abstract method implementation')
+
+    def set_root_password(self, password):
+        """Set Hoster root password
+
+        :param password: The root password to set
+        """
+
+
+
+
+
+
+
+
+
+
 
     def options(self):
         """
