@@ -3,8 +3,21 @@ from collections import namedtuple
 
 
 VpsConfiguration = namedtuple('VpsConfiguration', ['ip', 'password'])
-VpsOption = namedtuple('VpsOption', ['cores', 'memory', 'storage', 'bandwidth', 'connection', 'price', 'purchase_url'])  # Price in USD, storage and memory in GB 
-VpsStatus = namedtuple('VpsStatus', ['memory_used', 'storage_used', 'bandwidth_used', 'online', 'expiration'])   # Online is a boolean, expiration an ISO datetime
+
+
+VpsOption = namedtuple('VpsOption', ['cores',
+                                     'memory',          # Memory in GB
+                                     'storage',         # Storage in GB
+                                     'bandwidth',
+                                     'connection',
+                                     'price',           # Price in USD
+                                     'purchase_url'])
+
+VpsStatus = namedtuple('VpsStatus', ['memory_used',
+                                     'storage_used',
+                                     'bandwidth_used',
+                                     'online',          # Boolean
+                                     'expiration'])     # ISO datetime
 
 
 class VpsHoster(Hoster):
