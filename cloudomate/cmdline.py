@@ -365,8 +365,24 @@ def _list_provider_types():
 def _options_vps(p):
     name, _ = p.get_metadata()
     print(("Options for %s:\n" % name))
-    p.get_options()
-    p.print_configurations()
+    options = p.get_options()
+
+    # Print heading
+    row = "{:<5}" + "{:20}" * 8
+    print(row.format("#", "Name", "Cores", "Memory (GB)", "Storage (GB)", "Bandwidth", "Connection (Gbit/s)", "Est. Price (mBTC)", "Price (USD)"))
+
+    for i, option in enumerate(options):
+        bandwidth = "Unlimited" if option.bandwidth == sys.maxsize else str(option.bandwidth)
+
+        # Calculate the estimated price
+        rate = wallet_util.get_rate("USD")
+        fee = wallet_util.get_network_fee()
+        gateway = p.get_gateway()
+        estimate = gateway.estimate_price(option.price * rate) + fee  # BTC
+        estimate = round(1000 * estimate, 2)  # mBTC
+
+        # Print everything
+        print(row.format(i, option.name, str(option.cores), str(option.memory), str(option.storage), bandwidth, str(option.connection), str(estimate), str(option.price)))
 
 
 def _options_vpn(provider):
@@ -374,8 +390,23 @@ def _options_vpn(provider):
     print(("Options for %s:\n" % name))
     options = provider.get_options()
 
+    # Print heading
+    row = "{:18}" * 6
+    print(row.format("Name", "Protocol", "Bandwidth", "Speed", "Est. Price (mBTC)", "Price (USD)"))
+
     for option in options:
-        _print_option_vpn(provider, option)
+        bandwidth = "Unlimited" if option.bandwidth == sys.maxsize else str(option.bandwidth)
+        speed = "Unlimited" if option.speed == sys.maxsize else option.speed
+
+        # Calculate the estimated price
+        rate = wallet_util.get_rate("USD")
+        fee = wallet_util.get_network_fee()
+        gateway = provider.get_gateway()
+        estimate = gateway.estimate_price(option.price * rate) + fee  # BTC
+        estimate = round(1000 * estimate, 2)  # mBTC
+
+        # Print everything
+        print(row.format(option.name, option.protocol, bandwidth, speed, str(estimate), str(option.price)))
 
 
 def _register_vps(p, vps_option, settings):
@@ -449,24 +480,7 @@ def _print_info_vpn(info):
     print("\nsettings.ovpn")
     print(header)
     print(ovpn)
-    print(header)
-
-
-def _print_option_vpn(provider, option):
-    bandwidth = "Unlimited" if option.bandwidth == sys.maxsize else option.bandwidth
-    speed = "Unlimited" if option.speed == sys.maxsize else option.speed
-
-    # Calculate the estimated price
-    rate = wallet_util.get_rate("USD")
-    fee = wallet_util.get_network_fee()
-    gateway = provider.get_gateway()
-    estimate = gateway.estimate_price(option.price * rate) + fee  # BTC
-    estimate = round(1000 * estimate, 2)  # mBTC
-
-    # Print everything
-    row = "{:18}" * 6
-    print(row.format("Name", "Protocol", "Bandwidth", "Speed", "Est. Price (mBTC)", "Price (USD)"))
-    print(row.format(option.name, option.protocol, bandwidth, speed, str(estimate), str(option.price)))
+    print(header)    
 
 
 if __name__ == '__main__':
