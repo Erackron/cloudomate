@@ -2,6 +2,8 @@ import subprocess
 import sys
 from argparse import ArgumentParser
 
+from CaseInsensitiveDict import CaseInsensitiveDict
+
 from cloudomate.hoster.vps.ccihosting import CCIHosting
 from cloudomate.hoster.vps.blueangelhost import BlueAngelHost
 from cloudomate.hoster.vps.crowncloud import CrownCloud
@@ -17,8 +19,8 @@ from cloudomate import wallet as wallet_util
 
 commands = ["options", "purchase", "list"]
 types = ["vps", "vpn"]
-providers = {
-    "vps": {
+providers = CaseInsensitiveDict({
+    "vps": CaseInsensitiveDict({
         "blueangelhost": BlueAngelHost,
         "ccihosting": CCIHosting,
         "crowncloud": CrownCloud,
@@ -26,11 +28,11 @@ providers = {
         "linevast": LineVast,
         'pulseservers': Pulseservers,
         "underground": UndergroundPrivate,
-    },
-    "vpn": {
+    }),
+    "vpn": CaseInsensitiveDict({
         "azirevpn": AzireVpn,
-    }
-}
+    })
+})
 
 
 def execute(cmd=sys.argv[1:]):
