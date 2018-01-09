@@ -7,10 +7,6 @@ from cloudomate.hoster.vps.vps_hoster import VpsHoster
 
 class SolusvmHoster(VpsHoster):
     @abstractmethod
-    def get_status(self, user_settings):
-        pass
-
-    @abstractmethod
     def start(self):
         pass
 
