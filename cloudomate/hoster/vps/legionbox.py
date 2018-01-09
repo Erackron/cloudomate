@@ -4,13 +4,28 @@ from collections import OrderedDict
 from cloudomate.gateway import coinbase
 from cloudomate.hoster.vps.solusvm_hoster import SolusvmHoster
 from cloudomate.hoster.vps.clientarea import ClientArea
-from cloudomate.hoster.vps.vpsoption import VpsOption
+from cloudomate.hoster.vps.vps_hoster import VpsOption
 
 
 class LegionBox(SolusvmHoster):
-    name = "legionbox"
-    website = "https://legionbox.com/"
-    required_settings = [
+    clientarea_url = 'https://legionbox.com/billing/clientarea.php'
+    gateway = coinbase
+
+    '''
+    Information about the Hoster
+    '''
+
+    @staticmethod
+    def get_gateway():
+        return coinbase
+
+    @staticmethod
+    def get_metadata():
+        return ("legionbox", "https://legionbox.com/")
+
+    @staticmethod
+    def get_required_settings():
+        return [
         'firstname',
         'lastname',
         'email',
@@ -23,8 +38,18 @@ class LegionBox(SolusvmHoster):
         'hostname',
         'rootpw']
 
-    clientarea_url = 'https://legionbox.com/billing/clientarea.php'
-    gateway = coinbase
+    '''
+     Action methods of the Hoster that can be called
+     '''
+
+    @classmethod
+    def get_options(cls):
+        browser = cls._create_browser()
+        browser.open("https://legionbox.com/virtual-servers/")
+        soup = browser.get_current_page()
+        options = cls.parse_options(soup.find('div', {'id': 'Linux'}).ul)
+        options = itertools.chain(options, cls.parse_options(soup.find('div', {'id': 'SSD-VPS'}).ul))
+        return options
 
     def __init__(self, settings):
         super(LegionBox, self).__init__(settings)
@@ -36,10 +61,11 @@ class LegionBox(SolusvmHoster):
         options = itertools.chain(options, self.parse_options(soup.find('div', {'id': 'SSD-VPS'}).ul))
         return options
 
-    def parse_options(self, options_list):
+    @classmethod
+    def parse_options(cls, options_list):
         items = options_list.findAll('li')
         for item in items:
-            yield self.parse_option(item)
+            yield cls.parse_option(item)
 
     @staticmethod
     def parse_option(item):
@@ -47,10 +73,9 @@ class LegionBox(SolusvmHoster):
         return VpsOption(
             name=item.h4.text,
             price=float(item.strong.text[1:]),
-            currency='USD',
             connection=1000,
-            cpu=divs[2].strong.text[0],
-            ram=divs[3].strong.text.split(' ')[0],
+            cores=divs[2].strong.text[0],
+            memory=divs[3].strong.text.split(' ')[0],
             bandwidth='unmetered',
             storage=divs[4].strong.text.split(' ')[0],
             purchase_url=item.a['href']
