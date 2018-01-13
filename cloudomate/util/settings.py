@@ -52,7 +52,7 @@ class Settings(object):
             else:
                 for key in keys:
                     if not self.settings.has_option(section, key):
-                        print("Setting {}.{} does not exist".format(key, section))
+                        print("Setting {}.{} does not exist".format(section, key))
                         valid = False
         return valid
 
@@ -76,7 +76,7 @@ class Settings(object):
         if not self.settings.has_section(section):
             self.settings.add_section(section)
 
-        self.settings.set(section, key, value)
+        self.settings.set(section, key, str(value))
 
     def has_key(self, section, key):
         return self.settings.has_option(section, key)

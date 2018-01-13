@@ -6,26 +6,6 @@ from cloudomate.hoster.vps.vps_hoster import VpsHoster
 
 
 class SolusvmHoster(VpsHoster):
-    @abstractmethod
-    def start(self):
-        pass
-
-    @abstractmethod
-    def get_ip(self, user_settings):
-        pass
-
-    @abstractmethod
-    def info(self, user_settings):
-        pass
-
-    @abstractmethod
-    def set_rootpw(self, user_settings):
-        pass
-
-    @abstractmethod
-    def register(self, user_settings, vps_option):
-        pass
-
     @staticmethod
     def fill_in_server_form(form, user_settings, rootpw=True, nameservers=True, hostname=True):
         """
@@ -33,12 +13,12 @@ class SolusvmHoster(VpsHoster):
         :return: 
         """
         if hostname:
-            form['hostname'] = user_settings.get('hostname')
+            form['hostname'] = user_settings.get('server', 'hostname')
         if rootpw:
-            form['rootpw'] = user_settings.get('rootpw')
+            form['rootpw'] = user_settings.get('server', 'rootpw')
         if nameservers:
-            form['ns1prefix'] = user_settings.get('ns1')
-            form['ns2prefix'] = user_settings.get('ns2')
+            form['ns1prefix'] = user_settings.get('server', 'ns1')
+            form['ns2prefix'] = user_settings.get('server', 'ns2')
         form.new_control('text', 'ajax', 1)
         form.new_control('text', 'a', 'confproduct')
         form.method = "POST"
@@ -55,20 +35,20 @@ class SolusvmHoster(VpsHoster):
         :return: 
         """
         form = br.get_current_form()
-        form['firstname'] = user_settings.get("firstname")
-        form['lastname'] = user_settings.get("lastname")
-        form['email'] = user_settings.get("email")
-        form['phonenumber'] = user_settings.get("phonenumber")
-        form['companyname'] = user_settings.get("companyname")
-        form['address1'] = user_settings.get("address")
-        form['city'] = user_settings.get("city")
-        form['state'] = user_settings.get("state")
-        form['postcode'] = user_settings.get("zipcode")
+        form['firstname'] = user_settings.get('user', "firstname")
+        form['lastname'] = user_settings.get('user', "lastname")
+        form['email'] = user_settings.get('user', "email")
+        form['phonenumber'] = user_settings.get('user', "phonenumber")
+        form['companyname'] = user_settings.get('user', "companyname")
+        form['address1'] = user_settings.get('user', "address")
+        form['city'] = user_settings.get('user', "city")
+        form['state'] = user_settings.get('user', "state")
+        form['postcode'] = user_settings.get('user', "zipcode")
         #form['country'] = [user_settings.get('countrycode')]
         #form.set('country', [user_settings.get('countrycode')])
-        form['country'] = user_settings.get('countrycode')
-        form['password'] = user_settings.get("password")
-        form['password2'] = user_settings.get("password")
+        form['country'] = user_settings.get('user', 'countrycode')
+        form['password'] = user_settings.get('user', "password")
+        form['password2'] = user_settings.get('user', "password")
         form['paymentmethod'] = payment_method
         if acceptos:
             form['accepttos'] = True

@@ -3,6 +3,8 @@ from abc import abstractmethod, ABCMeta
 from fake_useragent import UserAgent
 from mechanicalsoup import StatefulBrowser
 
+from cloudomate import wallet as wallet_util
+
 
 class Hoster(metaclass=ABCMeta):
     def __init__(self, settings):
@@ -62,7 +64,7 @@ class Hoster(metaclass=ABCMeta):
         pass
 
     @classmethod
-    def pay(cls, gateway, url):
+    def pay(cls, wallet, gateway, url):
         """Do a payment (should be moved to the payment gateways?)
 
         :param gateway: gateway through which to make the payment
@@ -83,7 +85,7 @@ class Hoster(metaclass=ABCMeta):
     @abstractmethod
     def purchase(self, wallet, option):
         """Purchase Hoster.
-        
+
         :param wallet: The Electrum wallet to use for payments
         :param option: Hoster option to purchase
         """

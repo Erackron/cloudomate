@@ -17,6 +17,10 @@ from cloudomate.util.fakeuserscraper import UserScraper
 from cloudomate.wallet import Wallet
 from cloudomate import wallet as wallet_util
 
+
+import inspect
+
+
 commands = ["options", "purchase", "list"]
 types = ["vps", "vpn"]
 providers = CaseInsensitiveDict({
@@ -270,20 +274,21 @@ def _merge_arguments(config, provider, args):
 
 
 def _purchase_vps(provider, user_settings, vps_option):
-    configurations = provider.options()
+    configurations = provider.get_options()
     if not 0 <= vps_option < len(configurations):
         print(('Specified configuration %s is not in range 0-%s' % (vps_option, len(configurations))))
         sys.exit(1)
     vps_option = configurations[vps_option]
     row_format = "{:15}" * 6
     print("Selected configuration:")
-    print((row_format.format("Name", "CPU", "RAM", "Storage", "Bandwidth", "Est.Price")))
+    print((row_format.format("Name", "CPU", "RAM", "Storage", "Bandwidth", "Price")))
+    bandwidth = "Unlimited" if vps_option.bandwidth == sys.maxsize else vps_option.bandwidth
     print((row_format.format(
         vps_option.name,
-        str(vps_option.cpu),
-        str(vps_option.ram),
+        str(vps_option.cores),
+        str(vps_option.memory),
         str(vps_option.storage),
-        str(vps_option.bandwidth),
+        str(bandwidth),
         str(vps_option.price))))
 
     if user_settings.has_key('payment', 'walletpath') and user_settings.get("noconfirm") is True:
@@ -414,12 +419,14 @@ def _options_vpn(provider):
 def _register_vps(p, vps_option, settings):
     # For now use standard wallet implementation through Electrum
     # If wallet path is defined in config, use that.
-    if 'walletpath' in settings.config:
-        wallet = Wallet(wallet_path=settings.get('Electrum', 'walletpath'))
+    if settings.has_key('electrum', 'walletpath'):
+        wallet = Wallet(wallet_path=settings.get('electrum', 'walletpath'))
     else:
         wallet = Wallet()
 
-    p.purchase(user_settings=settings, options=vps_option, wallet=wallet)
+    provider = p(settings)
+    provider.purchase(wallet, vps_option)
+
 
 
 def _register_vpn(p, settings, option):
