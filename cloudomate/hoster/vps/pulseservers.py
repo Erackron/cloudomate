@@ -31,7 +31,8 @@ class Pulseservers(SolusvmHoster):
     @staticmethod
     def get_required_settings():
         return {
-            'user': ['firstname', 'lastname', 'email', 'phonenumber', 'address', 'city', 'state', 'zipcode', 'password'],
+            'user': ['firstname', 'lastname', 'email', 'phonenumber', 'password'],
+            'address': ['address', 'city', 'state', 'zipcode'],
             'server': ['hostname', 'rootpw']
         }
 
