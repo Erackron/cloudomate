@@ -423,8 +423,8 @@ def _options_vpn(provider):
 def _register_vps(p, vps_option, settings):
     # For now use standard wallet implementation through Electrum
     # If wallet path is defined in config, use that.
-    if settings.has_key('electrum', 'walletpath'):
-        wallet = Wallet(wallet_path=settings.get('electrum', 'walletpath'))
+    if settings.has_key('client', 'walletpath'):
+        wallet = Wallet(wallet_path=settings.get('client', 'walletpath'))
     else:
         wallet = Wallet()
 
@@ -437,7 +437,7 @@ def _register_vpn(p, settings, option):
     # For now use standard wallet implementation through Electrum
     # If wallet path is defined in config, use that.
     if 'walletpath' in settings.config:
-        wallet = Wallet(wallet_path=settings.get('Electrum', 'walletpath'))
+        wallet = Wallet(wallet_path=settings.get('client', 'walletpath'))
     else:
         wallet = Wallet()
 
