@@ -3,7 +3,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-from cloudomate.gateway.gateway import Gateway
+from cloudomate.gateway.gateway import Gateway, PaymentInfo
 
 
 class BitPay(Gateway):
@@ -19,12 +19,12 @@ class BitPay(Gateway):
         :return: a tuple of the amount in BitCoin along with the address
         """
         bitpay_id = url.split("=")[1]
-        url = "https://bitpay.com/invoiceData/" + bitpay_id + "?poll=false"
+        url = "https://bitpay.com/invoices/" + bitpay_id
         response = urllib.request.urlopen(url)
-        data = json.loads(response.read().decode('utf-8'))
-        amount = float(data['invoice']['buyerTotalBtcAmount'])
-        address = data['invoice']['bitcoinAddress']
-        return amount, address
+        response_json = json.loads(response.read().decode('utf-8'))
+        amount = float(response_json['data']['btcDue'])
+        address = response_json['data']['bitcoinAddress']
+        return PaymentInfo(amount, address)
 
     @staticmethod
     def get_gateway_fee():
