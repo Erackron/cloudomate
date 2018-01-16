@@ -13,12 +13,8 @@ import sys
 class Pulseservers(SolusvmHoster):
     clientarea_url = 'https://www.pulseservers.com/billing/clientarea.php'
 
-
-
     OPTIONS_URL = 'https://pulseservers.com/vps-linux.html'
     CART_URL = 'https://www.pulseservers.com/billing/cart.php?a=confdomains'
-
-
 
     '''
     Information about the Hoster
@@ -62,9 +58,9 @@ class Pulseservers(SolusvmHoster):
 
     def purchase(self, wallet, option):
         self._browser.open(option.purchase_url)
-        self._fill_server_form()
+        self._submit_server_form()
         self._browser.open(self.CART_URL)
-        page = self._fill_user_form()
+        page = self._submit_user_form()
         self.pay(wallet, self.get_gateway(), page.url)
 
     def set_root_password(self, password):
@@ -75,19 +71,16 @@ class Pulseservers(SolusvmHoster):
     Hoster-specific methods that are needed to perform the actions
     '''
 
-    def _fill_server_form(self):
+    def _submit_server_form(self):
         form = self._browser.select_form('form#orderfrm')
 
-        self.fill_in_server_form(form, self._settings, nameservers=False)
+        self._fill_server_form()
         form.set('billingcycle', 'monthly')
         form.form['action'] = 'https://www.pulseservers.com/billing/cart.php'
-        form.form['method'] = 'get'
-        form.new_control('hidden', 'a', 'confproduct')
-        form.new_control('hidden', 'ajax', '1')
 
-        self._browser.submit_selected()
+        return self._browser.submit_selected()
 
-    def _fill_user_form(self):
+    def _submit_user_form(self):
         # Select the correct submit button
         form = self._browser.select_form('form#mainfrm')
         soup = self._browser.get_current_page()
@@ -96,7 +89,7 @@ class Pulseservers(SolusvmHoster):
 
         # Let SolusVM class handle the rest
         gateway = self.get_gateway()
-        self.user_form(self._browser, self._settings, gateway.get_name(), errorbox_class='errorbox')
+        self._fill_user_form(gateway.get_name(), errorbox_class='errorbox')
 
         # Redirect to Coinbase
         self._browser.select_form(nr=0)
