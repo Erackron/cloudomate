@@ -7,7 +7,7 @@ class Settings(object):
     def __init__(self):
         self.settings = configparser.ConfigParser()
         config_dir = user_config_dir()
-        self._default_filename = os.path.join(config_dir, 'cloudomate.conf')
+        self._default_filename = os.path.join(config_dir, 'cloudomate.cfg')
 
     def read_settings(self, filename=None):
         """Read the settings object from a file.
