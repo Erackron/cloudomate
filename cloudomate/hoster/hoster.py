@@ -74,11 +74,11 @@ class Hoster(metaclass=ABCMeta):
 
         # Make the payment
         print("Purchasing {} instance".format(name))
-        amount, address = gateway.extract_info(url)
-        print(('Paying %s BTC to %s' % (amount, address)))
+        info = gateway.extract_info(url)
+        print(('Paying %s BTC to %s' % (info.amount, info.address)))
         fee = wallet_util.get_network_fee()
         print(('Calculated fee: %s' % fee))
-        transaction_hash = wallet.pay(address, amount, fee)
+        transaction_hash = wallet.pay(info.address, info.amount, fee)
         print('Done purchasing')
         return transaction_hash
 
