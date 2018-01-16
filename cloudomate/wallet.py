@@ -187,7 +187,7 @@ class ElectrumWalletHandler(object):
 
         if not wallet_path is None:
             print('Using wallet: ', wallet_path)
-        subprocess.call(self._command(['daemon', 'load_wallet'], output=False))
+        self._command(['daemon', 'load_wallet'], output=False)
 
     def __del__(self):
         if self.not_running_before:
@@ -202,9 +202,9 @@ class ElectrumWalletHandler(object):
         :return: transaction details
         """
         if fee is None:
-            transaction = subprocess.check_output(self.command + ['payto', str(address), str(amount)]).decode()
+            transaction = self._command(['payto', str(address), str(amount)])
         else:
-            transaction = subprocess.check_output(self.command + ['payto', str(address), str(amount), '-f', str(fee)]).decode()
+            transaction = self._command(['payto', str(address), str(amount), '-f', str(fee)])
         jtrs = json.loads(transaction)
         return jtrs['hex']
 
