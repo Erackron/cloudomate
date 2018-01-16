@@ -172,6 +172,8 @@ class ElectrumWalletHandler(object):
         Allows wallet_command to be changed to for example electrum --testnet
         :param wallet_command: command to call wallet
         """
+        self._wallet_path = wallet_path
+
         if wallet_command is None:
             if os.path.exists('/usr/local/bin/electrum'):
                 wallet_command = ['/usr/local/bin/electrum']
@@ -182,11 +184,10 @@ class ElectrumWalletHandler(object):
         self.not_running_before = b'not running' in p
         if self.not_running_before:
             subprocess.call(self.command + ['daemon', 'start'])
-        if wallet_path is None:
-            subprocess.call(self.command + ['daemon', 'load_wallet'])
-        else:
+
+        if not wallet_path is None:
             print('Using wallet: ', wallet_path)
-            subprocess.call(self.command + ['daemon', 'load_wallet', '-w', wallet_path])
+        subprocess.call(self._command(['daemon', 'load_wallet'], output=False))
 
     def __del__(self):
         if self.not_running_before:
@@ -213,7 +214,7 @@ class ElectrumWalletHandler(object):
         :param transaction: hex of transaction
         :return: if successful returns success and
         """
-        broadcast = subprocess.check_output(self.command + ['broadcast', transaction]).decode()
+        broadcast = self._command(['broadcast', transaction])
         jbr = json.loads(broadcast)
         return tuple(jbr)
 
@@ -222,7 +223,7 @@ class ElectrumWalletHandler(object):
         Return the balance of the default electrum wallet
         :return: balance of default wallet
         """
-        output = subprocess.check_output(self.command + ['getbalance']).decode()
+        output = self._command(['getbalance'])
         print('\n\n', output, '\n\n')
         balance_dict = json.loads(output)
         return balance_dict
@@ -232,6 +233,16 @@ class ElectrumWalletHandler(object):
         Return the list of addresses of default wallet
         :return: 
         """
-        address = subprocess.check_output(self.command + ['listaddresses']).decode()
+        address = self._command(['listaddresses'])
         addr = json.loads(address)
         return addr
+
+    def _command(self, c, output=True):
+        command = self.command + c
+        if not self._wallet_path is None:
+            command += ['-w', self._wallet_path]
+
+        if output:
+            return subprocess.check_output(command).decode()
+        else:
+            subprocess.call(command)
