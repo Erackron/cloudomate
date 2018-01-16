@@ -149,7 +149,7 @@ class Wallet:
         if self.get_balance() < amount + tx_fee:
             print('Not enough funds')
             return
-        return
+        
         transaction_hex = self.wallet_handler.create_transaction(amount, address, fee)
         success, transaction_hash = self.wallet_handler.broadcast(transaction_hex)
         if not success:
