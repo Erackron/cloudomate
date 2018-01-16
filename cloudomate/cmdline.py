@@ -257,7 +257,7 @@ def _merge_random_user_data(user_settings):
     randomuser = usergenerator.get_user()
     for section in randomuser.keys():
         for key in randomuser[section].keys():
-            user_settings.put(section, key)
+            user_settings.put(section, key, randomuser[section][key])
 
 
 def _get_user_settings(args, provider=None):

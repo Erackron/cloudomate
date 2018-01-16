@@ -1,3 +1,6 @@
+import random
+import string
+
 from mechanicalsoup import StatefulBrowser
 
 
@@ -13,6 +16,7 @@ class UserScraper:
         'State Full',
         'Zip Code',
         'Phone Number',
+        'Company'
     ]
 
     pages = {
@@ -23,12 +27,21 @@ class UserScraper:
     }
 
     def __init__(self, country='NL'):
+        self.country_code = country
         self.browser = StatefulBrowser()
         self.page = UserScraper.pages.get(country)
 
     def get_user(self):
         self.browser.open(self.page)
         attrs = {}
+
+        attrs['country_code'] = self.country_code
+        attrs['password'] = ''.join(random.choices(string.ascii_letters + string.digits, k=12))
+        attrs['email'] = self._get_attribute('Username') + '@email.com'
+        attrs['rootpw'] = attrs['password']
+        attrs['ns1'] = 'ns1'
+        attrs['ns2'] = 'ns2'
+        attrs['hostname'] = self._get_attribute('Username') + '.hostname.com'
 
         for attr in self.attributes:
             attrs[attr] = self._get_attribute(attr)
@@ -39,8 +52,9 @@ class UserScraper:
         config = {}
         # Treat full name separately because it needs to be split
         if 'Full Name' in attrs:
-            config['firstname'] = attrs['Full Name'].split('\xa0')[0]
-            config['lastname'] = attrs['Full Name'].split('\xa0')[-1]
+            config['user'] = {}
+            config['user']['firstname'] = attrs['Full Name'].split('\xa0')[0]
+            config['user']['lastname'] = attrs['Full Name'].split('\xa0')[-1]
 
         # Map the possible user attributes to their config names and sections
         mapping = {
@@ -48,14 +62,23 @@ class UserScraper:
             'City': ('address', 'city'),
             'State Full': ('address', 'state'),
             'Zip Code': ('address', 'zipcode'),
-            'Phone Number': ('user', 'phoneNumber'),
-            'Company': ('user', 'companyName'),
+            'Phone Number': ('user', 'phonenumber'),
+            'Company': ('user', 'companyname'),
             'Username': ('user', 'username'),
+            'country_code': ('address', 'countrycode'),
+            'password': ('user', 'password'),
+            'email': ('user', 'email'),
+            'rootpw': ('server', 'rootpw'),
+            'ns1': ('server', 'ns1'),
+            'ns2': ('server', 'ns2'),
+            'hostname': ('server', 'hostname'),
         }
 
         for attr in attrs.keys():
             if attr in mapping.keys():
                 section, key = mapping[attr]
+                if section not in config:
+                    config[section] = {}
                 config[section][key] = attrs[attr]
         return config
 
