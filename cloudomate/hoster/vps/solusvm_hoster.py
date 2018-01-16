@@ -1,11 +1,71 @@
 import sys
 
-from cloudomate.hoster.vps.vps_hoster import VpsHoster
 from mechanicalsoup import LinkNotFoundError
 from bs4 import BeautifulSoup
+from abc import abstractmethod
+import datetime
+
+from cloudomate.hoster.vps.vps_hoster import VpsConfiguration
+from cloudomate.hoster.vps.vps_hoster import VpsHoster
+from cloudomate.hoster.vps.vps_hoster import VpsStatus
+from cloudomate.hoster.vps.clientarea import ClientArea
 
 
 class SolusvmHoster(VpsHoster):
+
+    '''
+    Methods that are the same for all subclasses
+    '''
+
+    def get_configuration(self):
+        url = self.get_clientarea_url()
+        clientarea = ClientArea(self._browser, url, self._settings)
+
+        ip = clientarea.get_ip()
+        password = self._settings.get('server', 'rootpw')
+
+        return VpsConfiguration(ip, password)
+
+    def get_status(self):
+        url = self.get_clientarea_url()
+        clientarea = ClientArea(self._browser, url, self._settings)
+
+        services = clientarea.get_services()
+        service = services[0]  # Only look at the first one (cloudomate supports just one server per account)
+        online = True if service['status'] == 'active' else False
+        expiration = datetime.datetime.strptime(service['next_due_date'], '%Y-%m-%d')
+
+        # TODO: Also retrieve used bandwidth, etc.
+        return VpsStatus(0, 0, 0, online, expiration)
+
+    def set_root_password(self, password):
+        url = self.get_clientarea_url()
+        clientarea = ClientArea(self._browser, url, self._settings)
+
+        if clientarea.set_rootpw_rootpassword_php(password):
+            # Succes, save
+            self._settings.put('server', 'rootpw', password)
+            self._settings.save_settings()
+
+
+    '''
+    Static methods that must be overwritten by subclasses
+    '''
+
+    @staticmethod
+    @abstractmethod
+    def get_clientarea_url():
+        """Get the url of the clientarea for this hoster
+
+        :return: Returns the clientarea url
+        """
+        pass
+
+
+    '''
+    Methods that are used by subclasses to fill parts of the forms that are shared between hosters
+    '''
+
     def _fill_server_form(self):
         """Fills the server configuration form (should be currently selected) as much as possible
 

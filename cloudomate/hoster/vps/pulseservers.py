@@ -2,8 +2,6 @@ from collections import OrderedDict
 
 from cloudomate.gateway.coinbase import Coinbase
 from cloudomate.hoster.vps.solusvm_hoster import SolusvmHoster
-from cloudomate.hoster.vps.clientarea import ClientArea
-from cloudomate.hoster.vps.vpsoption import VpsOption
 from cloudomate.wallet import determine_currency
 
 from cloudomate.hoster.vps import vps_hoster
@@ -11,14 +9,16 @@ import sys
 
 
 class Pulseservers(SolusvmHoster):
-    clientarea_url = 'https://www.pulseservers.com/billing/clientarea.php'
-
-    OPTIONS_URL = 'https://pulseservers.com/vps-linux.html'
     CART_URL = 'https://www.pulseservers.com/billing/cart.php?a=confdomains'
+    OPTIONS_URL = 'https://pulseservers.com/vps-linux.html'
 
     '''
     Information about the Hoster
     '''
+
+    @staticmethod
+    def get_clientarea_url():
+        return 'https://www.pulseservers.com/billing/clientarea.php'
 
     @staticmethod
     def get_gateway():
@@ -40,9 +40,6 @@ class Pulseservers(SolusvmHoster):
     Action methods of the Hoster that can be called
     '''
 
-    def get_configuration(self):
-        pass
-
     @classmethod
     def get_options(cls):
         browser = cls._create_browser()
@@ -53,18 +50,12 @@ class Pulseservers(SolusvmHoster):
         boxes = soup.select('div.pricing-box')
         return [cls._parse_box(box) for box in boxes]
 
-    def get_status(self):
-        pass
-
     def purchase(self, wallet, option):
         self._browser.open(option.purchase_url)
         self._submit_server_form()
         self._browser.open(self.CART_URL)
         page = self._submit_user_form()
         self.pay(wallet, self.get_gateway(), page.url)
-
-    def set_root_password(self, password):
-        pass
 
 
     '''
@@ -122,31 +113,3 @@ class Pulseservers(SolusvmHoster):
         purchase_url = details[9].a['href']
 
         return vps_hoster.VpsOption(name, cores, memory, storage, sys.maxsize, connection, price, purchase_url)
-
-
-
-
-
-
-
-    # def get_status(self, user_settings):
-    #     clientarea = ClientArea(self._browser, self.clientarea_url, user_settings)
-    #     return clientarea.print_services()
-
-    # def set_rootpw(self, user_settings):
-    #     clientarea = ClientArea(self._browser, self.clientarea_url, user_settings)
-    #     clientarea.set_rootpw_rootpassword_php()
-
-    # def get_ip(self, user_settings):
-    #     clientarea = ClientArea(self._browser, self.clientarea_url, user_settings)
-    #     return clientarea.get_ip()
-
-    # def info(self, user_settings):
-    #     clientarea = ClientArea(self._browser, self.clientarea_url, user_settings)
-    #     data = clientarea.get_service_info()
-    #     return OrderedDict([
-    #         ('Hostname', data[0]),
-    #         ('IP address', data[1]),
-    #         ('Nameserver 1', data[2].split('.com')[0] + '.com'),
-    #         ('Nameserver 2', data[2].split('.com')[1]),
-    #     ])

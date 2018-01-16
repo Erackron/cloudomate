@@ -209,7 +209,10 @@ def status(args):
     s = p.get_status()
 
     if args.type == "vps":
-        raise NotImplementedError('Printing VPS status must still be implemented')
+        row = "{:18}" * 5
+        print(row.format("Memory used (GB)", "Storage used (GB)", "Bandwidth used", "Online", "Expiration"))
+        print(row.format(str(s.memory_used), str(s.storage_used), str(s.bandwidth_used), str(s.online), s.expiration.isoformat()))
+
     elif args.type == "vpn":
         row = "{:18}" * 2
         print(row.format("Online", "Expiration"))
@@ -240,9 +243,9 @@ def purchase(args):
         sys.exit(2)
 
     if args.type == 'vps':
-        _purchase_vps(provider, user_settings, args.option)
+        _purchase_vps(provider, user_settings, args)
     else:
-        _purchase_vpn(provider, user_settings)
+        _purchase_vpn(provider, user_settings, args)
 
 
 def _check_provider(provider, config):
@@ -273,7 +276,8 @@ def _merge_arguments(config, provider, args):
             config.put(provider, key, args[key])
 
 
-def _purchase_vps(provider, user_settings, vps_option):
+def _purchase_vps(provider, user_settings, args):
+    vps_option = args.option
     configurations = provider.get_options()
     if not 0 <= vps_option < len(configurations):
         print(('Specified configuration %s is not in range 0-%s' % (vps_option, len(configurations))))
@@ -291,7 +295,7 @@ def _purchase_vps(provider, user_settings, vps_option):
         str(bandwidth),
         str(vps_option.price))))
 
-    if user_settings.has_key('payment', 'walletpath') and user_settings.get("noconfirm") is True:
+    if args.noconfirm or (user_settings.has_key('client', 'noconfirm') and user_settings.get('client', "noconfirm") == "1"):
         choice = True
     else:
         choice = _confirmation("Purchase this option?", default="no")
@@ -301,12 +305,12 @@ def _purchase_vps(provider, user_settings, vps_option):
         return False
 
 
-def _purchase_vpn(provider, user_settings):
+def _purchase_vpn(provider, user_settings, args):
     print("Selected configuration:")
     options = provider.get_options()
     _print_option_vpn(provider, options[0])
 
-    if user_settings.has_key('payment', 'walletpath') and user_settings.get("noconfirm") is True:
+    if args.noconfirm or (user_settings.has_key('client', 'noconfirm') and user_settings.get('client', "noconfirm") == "1"):
         choice = True
     else:
         choice = _confirmation("Purchase this option?", default="no")
@@ -470,6 +474,11 @@ def ssh(args):
 
 
 def _print_info_vps(info_dict):
+    row = "{:18}" * 5
+    print(row.format("IP address", "Root password"))
+    print(row.format(str(s.ip), str(s.root_password)))
+
+
     row_format = "{:<25}{:<30}"
     for key in info_dict:
         print((row_format.format(key, info_dict[key])))

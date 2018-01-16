@@ -14,16 +14,14 @@ VpsOption = namedtuple('VpsOption', ['name',
                                      'price',           # Price in USD
                                      'purchase_url'])
 
-VpsStatus = namedtuple('VpsStatus', ['memory_used',
-                                     'storage_used',
+VpsStatus = namedtuple('VpsStatus', ['memory_used',     # Memory in GB
+                                     'storage_used',    # Storage in GB
                                      'bandwidth_used',
                                      'online',          # Boolean
-                                     'expiration'])     # ISO datetime
+                                     'expiration'])     # Python Datetime object
 
 
 class VpsHoster(Hoster):
-    # TODO: Find out if get_clientarea_url should be implemented as a method
-
     @abstractmethod
     def get_configuration(self):
         """Get Hoster configuration.

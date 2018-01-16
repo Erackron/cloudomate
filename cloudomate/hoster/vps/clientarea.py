@@ -23,7 +23,7 @@ class ClientArea(object):
         self.home_page = None
         self.services = None
         self.user_settings = user_settings
-        self._login(user_settings.get('email'), user_settings.get('password'))
+        self._login(user_settings.get('user', 'email'), user_settings.get('user', 'password'))
 
     def _login(self, email, password):
         """
@@ -149,12 +149,11 @@ class ClientArea(object):
             print(("Wrong index: %s not between 0 and %s" % (number, len(self.services) - 1)))
             sys.exit(2)
 
-    def set_rootpw_client_data(self):
+    def set_rootpw_client_data(self, password):
         """
         Set the rootpassword for the appropriate service through client_data.php.
         :return: 
         """
-        password = self.user_settings.get('rootpw')
         service = self.get_specified_service()
         self._ensure_active(service)
         millis = int(round(time.time() * 1000))
@@ -172,12 +171,11 @@ class ClientArea(object):
             print((response_json['msg']))
             return False
 
-    def set_rootpw_rootpassword_php(self):
+    def set_rootpw_rootpassword_php(self, password):
         """
         Set the rootpassword for the appropriate service through rootpassword.php.
         :return: 
         """
-        password = self.user_settings.get('rootpw')
         service = self.get_specified_or_active_service()
         self._ensure_active(service)
         data = {
@@ -189,8 +187,10 @@ class ClientArea(object):
         page = self.browser.open(url, data)
         if 'Password Updated' in page.get_data():
             print("Password changed successfully")
+            return True
         else:
             print("Setting password failed")
+            return False
 
     @staticmethod
     def _ensure_active(service):
@@ -224,7 +224,7 @@ class ClientArea(object):
         :return: the service
         """
         service = self.get_specified_service()
-        if service['status'] != 'active' and 'number' not in self.user_settings.config:
+        if service['status'] != 'active' and not self.user_settings.has_key('server', 'number'):
             for s in self.services:
                 if s['status'] == 'active':
                     service = s
@@ -244,8 +244,8 @@ class ClientArea(object):
         return info
 
     def _get_number(self):
-        if 'number' in self.user_settings.config:
-            return int(self.user_settings.get('number'))
+        if self.user_settings.has_key('server', 'number'):
+            return int(self.user_settings.get('server', 'number'))
         return 0
 
     def get_emails(self):
