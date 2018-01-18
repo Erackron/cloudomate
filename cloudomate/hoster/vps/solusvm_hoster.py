@@ -114,7 +114,7 @@ class SolusvmHoster(VpsHoster):
         form['country'] = self._settings.get('address', 'countrycode')
         form['password'] = self._settings.get('user', "password")
         form['password2'] = self._settings.get('user', "password")
-        form['paymentmethod'] = payment_method
+        form['paymentmethod'] = payment_method.lower()
 
         try:
             form['accepttos'] = True  # Attempt to accept the terms and conditions
