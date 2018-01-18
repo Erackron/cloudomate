@@ -45,10 +45,10 @@ class BlueAngelHost(SolusvmHoster):
     def get_options(cls):
         browser = cls._create_browser()
         browser.open("https://www.blueangelhost.com/openvz-vps/")
-        options = cls.parse_options(browser.get_current_page())
+        options = cls._parse_options(browser.get_current_page())
 
         browser.open("https://www.blueangelhost.com/kvm-vps/")
-        options = itertools.chain(options, cls.parse_options(browser.get_current_page(), is_kvm=True))
+        options = itertools.chain(options, cls._parse_options(browser.get_current_page(), is_kvm=True))
         return list(options)
 
     def purchase(self, wallet, option):
@@ -70,15 +70,19 @@ class BlueAngelHost(SolusvmHoster):
         clientarea = ClientArea(self._browser, self.get_clientarea_url(), self._settings)
         clientarea.set_rootpw_client_data(password)
 
+    '''
+    Hoster-specific methods that are needed to perform the actions
+    '''
+
     @classmethod
-    def parse_options(cls, page, is_kvm=False):
+    def _parse_options(cls, page, is_kvm=False):
         month = page.find('div', {'id': 'monthly_price'})
         details = month.findAll('div', {'class': 'plan_table'})
         for column in details:
-            yield cls.parse_blue_options(column, is_kvm=is_kvm)
+            yield cls._parse_blue_options(column, is_kvm=is_kvm)
 
     @staticmethod
-    def parse_blue_options(column, is_kvm=False):
+    def _parse_blue_options(column, is_kvm=False):
         if is_kvm:
             split_char = ' '
         else:

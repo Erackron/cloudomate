@@ -12,6 +12,10 @@ from cloudomate.hoster.vps.clientarea import ClientArea
 
 
 class SolusvmHoster(VpsHoster):
+    """
+    SolusvmHoster is the common superclass of all VPS hosters that make use of the Solusvm management package.
+    This makes it possible to fill in the registration form in a similar manner for all Solusvm subclasses.
+    """
 
     '''
     Methods that are the same for all subclasses
@@ -47,7 +51,6 @@ class SolusvmHoster(VpsHoster):
             self._settings.put('server', 'rootpw', password)
             self._settings.save_settings()
 
-
     '''
     Static methods that must be overwritten by subclasses
     '''
@@ -60,7 +63,6 @@ class SolusvmHoster(VpsHoster):
         :return: Returns the clientarea url
         """
         pass
-
 
     '''
     Methods that are used by subclasses to fill parts of the forms that are shared between hosters

@@ -26,7 +26,7 @@ class Pulseservers(SolusvmHoster):
 
     @staticmethod
     def get_metadata():
-        return ('PulseServers', 'https://pulseservers.com')
+        return 'PulseServers', 'https://pulseservers.com'
 
     @staticmethod
     def get_required_settings():
@@ -35,7 +35,6 @@ class Pulseservers(SolusvmHoster):
             'address': ['address', 'city', 'state', 'zipcode'],
             'server': ['hostname', 'rootpw']
         }
-
 
     '''
     Action methods of the Hoster that can be called
@@ -57,7 +56,6 @@ class Pulseservers(SolusvmHoster):
         self._browser.open(self.CART_URL)
         page = self._submit_user_form()
         self.pay(wallet, self.get_gateway(), page.url)
-
 
     '''
     Hoster-specific methods that are needed to perform the actions
