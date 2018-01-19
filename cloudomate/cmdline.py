@@ -180,9 +180,12 @@ def set_rootpw(args):
 
 def get_ip(args):
     provider = _get_provider(args)
-    user_settings = _get_user_settings(args, provider.name)
-    ip = provider.get_ip(user_settings)
-    print(ip)
+    name, _ = provider.get_metadata()
+    user_settings = _get_user_settings(args, name)
+
+    p = provider(user_settings)
+    c = p.get_configuration()
+    print(c.ip)
 
 
 def info(args):
@@ -473,15 +476,10 @@ def ssh(args):
         print('Install sshpass to use this command')
 
 
-def _print_info_vps(info_dict):
-    row = "{:18}" * 5
+def _print_info_vps(info):
+    row = "{:18}" * 2
     print(row.format("IP address", "Root password"))
-    print(row.format(str(s.ip), str(s.root_password)))
-
-
-    row_format = "{:<25}{:<30}"
-    for key in info_dict:
-        print((row_format.format(key, info_dict[key])))
+    print(row.format(str(info.ip), str(info.root_password)))
 
 
 def _print_info_vpn(info):
