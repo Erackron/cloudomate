@@ -165,17 +165,20 @@ def add_parser_info(subparsers, provider_type):
 def add_parser_vps_setrootpw(subparsers):
     parser_setrootpw = subparsers.add_parser("setrootpw", help="Set the root password of the last activated service.")
     parser_setrootpw.add_argument("provider", help="The specified provider", choices=providers['vps'])
+    parser_setrootpw.add_argument("root_password", help="The new root password")
     parser_setrootpw.add_argument("-n", "--number", help="The number of the VPS service to change the password for")
     parser_setrootpw.add_argument("-e", "--email", help="The login email address")
     parser_setrootpw.add_argument("-pw", "--password", help="The login password")
-    parser_setrootpw.add_argument("-p", "--rootpw", help="The new root password", required=True)
+    #parser_setrootpw.add_argument("-p", "--rootpw", help="The new root password", required=True)
     parser_setrootpw.set_defaults(func=set_rootpw)
 
 
 def set_rootpw(args):
     provider = _get_provider(args)
-    user_settings = _get_user_settings(args, provider.name)
-    provider.set_rootpw(user_settings)
+    name, _ = provider.get_metadata()
+    user_settings = _get_user_settings(args, name)
+    p = provider(user_settings)
+    p.set_root_password(args.root_password)
 
 
 def get_ip(args):
@@ -465,12 +468,13 @@ def _get_provider(args):
 
 def ssh(args):
     provider = _get_provider(args)
-    user_settings = _get_user_settings(args, provider.name)
-    ip = provider.get_ip(user_settings)
-    user = user_settings.get('user')
+    name, _ = provider.get_metadata()
+    user_settings = _get_user_settings(args, name)
+    p = provider(user_settings)
+    c = p.get_configuration()
+
     try:
-        subprocess.call(['sshpass', '-p', user_settings.get('rootpw'), 'ssh', '-o', 'StrictHostKeyChecking=no',
-                         user + '@' + ip])
+        subprocess.call(['sshpass', '-p', user_settings.get('server', 'rootpw'), 'ssh', '-o', 'StrictHostKeyChecking=no', 'root@' + c.ip])
     except OSError as e:
         print(e)
         print('Install sshpass to use this command')

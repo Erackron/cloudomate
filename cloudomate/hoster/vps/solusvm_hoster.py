@@ -39,8 +39,9 @@ class SolusvmHoster(VpsHoster):
         online = True if service['status'] == 'active' else False
         expiration = datetime.datetime.strptime(service['next_due_date'], '%Y-%m-%d')
 
-        # TODO: Also retrieve used bandwidth, etc.
-        return VpsStatus(0, 0, 0, online, expiration)
+        # TODO: Also retrieve used bandwidth, etc. if possible
+
+        return VpsStatus(-1, -1, -1, online, expiration)
 
     def set_root_password(self, password):
         url = self.get_clientarea_url()
