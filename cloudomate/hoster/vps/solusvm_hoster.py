@@ -83,6 +83,7 @@ class SolusvmHoster(VpsHoster):
         try:
             form['rootpw'] = self._settings.get('server', 'rootpw')
         except LinkNotFoundError:
+            # TODO: Properly handle this warning
             print('Couldn\'t set root password')
 
         try:
