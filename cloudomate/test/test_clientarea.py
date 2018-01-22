@@ -9,7 +9,7 @@ import os
 import unittest
 
 from cloudomate.hoster.vps.clientarea import ClientArea
-from mock.mock import MagicMock
+from mock import MagicMock
 
 
 class TestClientArea(unittest.TestCase):

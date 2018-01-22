@@ -21,7 +21,7 @@ else:
 import requests
 from cloudomate.gateway.bitpay import BitPay
 from cloudomate.gateway.coinbase import Coinbase
-from unittest.mock import patch, Mock
+from mock import patch, Mock
 
 from cloudomate.util.bitcoinaddress import validate
 
