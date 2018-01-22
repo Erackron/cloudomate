@@ -12,7 +12,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-from unittest.mock import patch, Mock
+from mock import patch, Mock
 
 import requests
 
