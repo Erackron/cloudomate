@@ -134,18 +134,3 @@ class UndergroundPrivate(SolusvmHoster):
         gateway = self.get_gateway()
         return self._fill_user_form(gateway.get_name(), errorbox_class='errorbox')
 
-    # def get_status(self, user_settings):
-    #     clientarea = ClientArea(self._browser, self.clientarea_url, user_settings)
-    #     return clientarea.print_services()
-
-    # def set_rootpw(self, user_settings):
-    #     clientarea = ClientArea(self._browser, self.clientarea_url, user_settings)
-    #     clientarea.set_rootpw_client_data()
-
-    # def get_ip(self, user_settings):
-    #     clientarea = ClientArea(self._browser, self.clientarea_url, user_settings)
-    #     return clientarea.get_client_data_ip(self.client_data_url)
-
-    # def info(self, user_settings):
-    #     clientarea = ClientArea(self._browser, self.clientarea_url, user_settings)
-    #     return clientarea.get_client_data_info_dict(self.client_data_url)

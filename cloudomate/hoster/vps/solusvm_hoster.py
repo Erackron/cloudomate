@@ -48,15 +48,6 @@ class SolusvmHoster(VpsHoster):
 
         return VpsStatus(VpsStatusResourceNone, VpsStatusResourceNone, VpsStatusResourceNone, online, expiration, service)
 
-    def set_root_password(self, password):
-        url = self.get_clientarea_url()
-        clientarea = ClientArea(self._browser, url, self._settings)
-
-        if clientarea.set_rootpw_rootpassword_php(password):
-            # Succes, save
-            self._settings.put('server', 'rootpw', password)
-            self._settings.save_settings()
-
     '''
     Static methods that must be overwritten by subclasses
     '''

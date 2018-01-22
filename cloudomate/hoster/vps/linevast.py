@@ -79,35 +79,6 @@ class LineVast(SolusvmHoster):
         self._browser.submit_selected()
         self.pay(wallet, self.get_gateway(), self._browser.get_url())
 
-    def set_root_password(self, password):
-        clientarea = ClientArea(self._browser, self.get_clientarea_url(), self._settings)
-        info = clientarea.get_service_info()
-        self._browser.open("https://vm.linevast.de/login.php")
-        self._browser.select_form(nr=0)
-        self._browser.form['username'] = info[2]
-        self._browser.form['password'] = info[3]
-        self._browser.form.new_control('text', 'Submit', {'name': 'Submit', 'value': '1'})
-        self._browser.form.new_control('text', 'act', {'name': 'act', 'value': 'login'})
-        self._browser.form.method = "POST"
-        page = self._browser.submit()
-        if not self._check_login(page.get_data()):
-            print("Login failed")
-            sys.exit(2)
-        self._browser.open("https://vm.linevast.de/home.php")
-        vi = self._extract_vi_from_links(self._browser.links())
-        data = {
-            'act': 'rootpassword',
-            'opt': password,
-            'vi': vi
-        }
-        data = urllib.parse.urlencode(data)
-        page = self._browser.open("https://vm.linevast.de/_vm_remote.php", data)
-        if not self._check_set_rootpw(page.get_data()):
-            print("Setting password failed")
-            sys.exit(2)
-        else:
-            print("Password changed successfully")
-
     '''
     Hoster-specific methods that are needed to perform the actions
     '''
@@ -186,15 +157,6 @@ class LineVast(SolusvmHoster):
         for link in links:
             if "_v=" in link.url:
                 return link.url.split("_v=")[1]
-        return False
-
-    @staticmethod
-    def _check_set_rootpw(text):
-        data = json.loads(text)
-        if data['success'] and data['success'] == '1' \
-                and data['updtype'] and data['updtype'] == '1' \
-                and data['apistate'] and data['apistate'] == '1':
-            return True
         return False
 
     @staticmethod

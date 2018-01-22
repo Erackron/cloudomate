@@ -49,9 +49,3 @@ class VpsHoster(Hoster):
         """
         pass
 
-    @abstractmethod
-    def set_root_password(self, password):
-        """Set Hoster root password
-
-        :param password: The root password to set
-        """

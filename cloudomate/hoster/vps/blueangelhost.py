@@ -66,10 +66,6 @@ class BlueAngelHost(SolusvmHoster):
         self._browser.submit_selected()
         self.pay(wallet, self.get_gateway(), self._browser.get_url())
 
-    def set_root_password(self, password):
-        clientarea = ClientArea(self._browser, self.get_clientarea_url(), self._settings)
-        clientarea.set_rootpw_client_data(password)
-
     '''
     Hoster-specific methods that are needed to perform the actions
     '''
