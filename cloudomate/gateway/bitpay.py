@@ -1,7 +1,15 @@
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import division
+from __future__ import absolute_import
+from future import standard_library
+standard_library.install_aliases()
 import json
-import urllib.error
-import urllib.parse
-import urllib.request
+import sys
+if sys.version_info > (3,0):
+    from urllib.request import urlopen
+else:
+    from urllib2 import urlopen
 
 from cloudomate.gateway.gateway import Gateway, PaymentInfo
 
@@ -20,7 +28,7 @@ class BitPay(Gateway):
         """
         bitpay_id = url.split("=")[1]
         url = "https://bitpay.com/invoices/" + bitpay_id
-        response = urllib.request.urlopen(url)
+        response =urlopen(url)
         response_json = json.loads(response.read().decode('utf-8'))
         amount = float(response_json['data']['btcDue'])
         address = response_json['data']['bitcoinAddress']

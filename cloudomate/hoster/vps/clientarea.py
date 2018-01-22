@@ -1,10 +1,22 @@
 # coding=utf-8
+from __future__ import print_function
+from __future__ import unicode_literals
+from __future__ import division
+from __future__ import absolute_import
+from builtins import int
+from builtins import round
+from builtins import str
+from future import standard_library
+standard_library.install_aliases()
 import json
 import sys
 import time
-import urllib.error
-import urllib.parse
-import urllib.request
+if sys.version_info > (3,0):
+    from urllib.request import urlopen
+    from urllib.parse import urlencode
+else:
+    from urllib2 import urlopen
+    from urllib import urlencode
 from collections import OrderedDict
 import datetime
 from collections import namedtuple
@@ -98,7 +110,7 @@ class ClientArea(object):
 
     #
     # Legacy methods, currently not used
-    #   
+    #
 
     def get_emails(self):
         page = self._browser.open(self._url + "?action=emails")

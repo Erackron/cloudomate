@@ -1,3 +1,16 @@
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+from __future__ import absolute_import
+from builtins import int
+from future import standard_library
+standard_library.install_aliases()
+import re
+import sys
+from collections import OrderedDict
+
+from bs4 import BeautifulSoup
+
 from cloudomate.gateway.bitpay import BitPay
 from cloudomate.hoster.vps.solusvm_hoster import SolusvmHoster
 from cloudomate.hoster.vps.vps_hoster import VpsOption
