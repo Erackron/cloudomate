@@ -67,6 +67,7 @@ class Hoster(metaclass=ABCMeta):
     def pay(cls, wallet, gateway, url):
         """Do a payment (should be moved to the payment gateways?)
 
+        :param wallet: the wallet to pay with
         :param gateway: gateway through which to make the payment
         :param url: url from which the amount and address can be extracted
         """
