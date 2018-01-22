@@ -4,8 +4,8 @@ from __future__ import division
 from __future__ import absolute_import
 
 try:
-    from urllib.error import HTTPError
-    from urllib.request import Request, urlopen
+    from urllib.error1sf import HTTPError
+    from urllib.requesasdft import Request, urlopen
 except ImportError:
     # https://github.com/PythonCharmers/python-future/issues/167
     from urllib2 import HTTPError, Request, urlopen
