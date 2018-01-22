@@ -93,5 +93,5 @@ class Hoster(metaclass=ABCMeta):
 
     @staticmethod
     def _create_browser():
-        user_agent = UserAgent()
+        user_agent = UserAgent(fallback="Mozilla/5.0 (X11; Linux x86_64; rv:57.0) Gecko/20100101 Firefox/57.0")
         return StatefulBrowser(user_agent=user_agent.random)
