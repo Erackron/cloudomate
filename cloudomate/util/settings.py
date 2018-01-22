@@ -6,14 +6,15 @@ from builtins import str
 from builtins import open
 from future import standard_library
 standard_library.install_aliases()
-import configparser
+from configparser import ConfigParser
+from configparser import NoOptionError
 
 from appdirs import *
 
 
 class Settings(object):
     def __init__(self):
-        self.settings = configparser.ConfigParser()
+        self.settings = ConfigParser()
         config_dir = user_config_dir()
         self._default_filename = os.path.join(config_dir, 'cloudomate.cfg')
 
@@ -78,7 +79,7 @@ class Settings(object):
             if self.settings.has_option(section, key):
                 return self.settings.get(section, key)
         print("Setting {} does not exist in any of the given sections".format(key))
-        raise configparser.NoOptionError(sections[-1], key)
+        raise NoOptionError(sections[-1], key)
 
     def put(self, section, key, value):
         if not self.settings.has_section(section):
