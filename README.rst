@@ -193,6 +193,9 @@ and the instance is paid through an Electrum wallet. ::
    Basis OVZ      1              2              50             unmetered      6.99
    Purchase this option? (y/N)
 
+.. image:: https://jwooning.stackstorage.com/public-share/GXHQBr7b9xmOjEV/preview?path=%2F&mode=full&size=large
+   :alt: Cloudomate purchase vps
+
 Manage
 ------
 
