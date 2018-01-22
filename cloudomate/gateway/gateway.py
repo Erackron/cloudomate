@@ -8,9 +8,9 @@ from abc import abstractmethod, ABCMeta
 from collections import namedtuple
 
 PaymentInfo = namedtuple('PaymentInfo', ['amount', 'address'])
+from future.utils import with_metaclass
 
-
-class Gateway(metaclass=ABCMeta):
+class Gateway(with_metaclass(ABCMeta)):
     @staticmethod
     @abstractmethod
     def get_name():
