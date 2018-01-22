@@ -205,7 +205,8 @@ The following functions can be used to manage a purchased VPS instances ::
     setrootpw           Set the root password of the last activated service.
     getip               Get the ip of the specified service.
 
-
+.. image:: https://jwooning.stackstorage.com/public-share/WKuluQV5OxQam8a/preview?path=ssh_vps.gif&mode=full&size=large 
+   :alt: Cloudomate ssh vps
 
 Tests
 =====
