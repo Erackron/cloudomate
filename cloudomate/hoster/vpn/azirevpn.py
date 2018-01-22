@@ -16,7 +16,6 @@ class AzireVpn(vpn_hoster.VpnHoster):
     OPTIONS_URL = "https://www.azirevpn.com"
     DASHBOARD_URL = "https://manager.azirevpn.com"
 
-
     '''
     Information about the Hoster
     '''
@@ -33,7 +32,6 @@ class AzireVpn(vpn_hoster.VpnHoster):
     def get_required_settings():
         return {"user": ["username", "password"]}
 
-
     '''
     Action methods of the Hoster that can be called
     '''
@@ -41,7 +39,8 @@ class AzireVpn(vpn_hoster.VpnHoster):
     def get_configuration(self):
         response = requests.get(self.CONFIGURATION_URL)
         ovpn = response.text
-        return vpn_hoster.VpnConfiguration(self._settings.get("user", "username"), self._settings.get("user", "password"), ovpn)
+        return vpn_hoster.VpnConfiguration(self._settings.get("user", "username"),
+                                           self._settings.get("user", "password"), ovpn)
 
     @classmethod
     def get_options(cls):
@@ -51,7 +50,7 @@ class AzireVpn(vpn_hoster.VpnHoster):
         soup = browser.get_current_page()
         strong = soup.select_one("div.prices > ul > li:nth-of-type(2) > ul > li:nth-of-type(1) strong")
         string = strong.get_text()
-        eur = float(string[string.index("€")+2 : string.index("/")-1])
+        eur = float(string[string.index("€") + 2: string.index("/") - 1])
 
         # Calculate the price in USD
         c = CurrencyRates()
@@ -90,7 +89,7 @@ class AzireVpn(vpn_hoster.VpnHoster):
         page = self._order()
 
         # Make the payment
-        self.pay(self.get_gateway(), page.url)
+        self.pay(wallet, self.get_gateway(), page.url)
 
     '''
     Hoster-specific methods that are needed to perform the actions
@@ -99,10 +98,9 @@ class AzireVpn(vpn_hoster.VpnHoster):
     def _register(self):
         self._browser.open(self.REGISTER_URL)
         form = self._browser.select_form()
-        form["username"] = self._settings.get("username")
-        form["password"] = self._settings.get("password")
-        form["password_confirmation"] = self._settings.get("password")
-        #form["email"] = self._settings.get("email")
+        form["username"] = self._settings.get("user", "username")
+        form["password"] = self._settings.get("user", "password")
+        form["password_confirmation"] = self._settings.get("user", "password")
         page = self._browser.submit_selected()
 
         if page.url == self.REGISTER_URL:
@@ -117,8 +115,8 @@ class AzireVpn(vpn_hoster.VpnHoster):
     def _login(self):
         self._browser.open(self.LOGIN_URL)
         form = self._browser.select_form()
-        form["username"] = self._settings.get("user","username")
-        form["password"] = self._settings.get("user","password")
+        form["username"] = self._settings.get("user", "username")
+        form["password"] = self._settings.get("user", "password")
         page = self._browser.submit_selected()
 
         if page.url == self.LOGIN_URL:

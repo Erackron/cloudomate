@@ -156,7 +156,7 @@ def add_parser_info(subparsers, provider_type):
                                         help="Get information of the specified %s service." % provider_type.upper())
     parser_info.add_argument("provider", help="The specified provider", nargs="?", choices=providers[provider_type])
     parser_info.add_argument("-n", "--number",
-                             help="The number of the %s service to change the password for" % provider_type.upper())
+                             help="The number of the %s service" % provider_type.upper())
     parser_info.add_argument("-e", "--email", help="The login email address")
     parser_info.add_argument("-pw", "--password", help="The login password")
     parser_info.set_defaults(func=info)
@@ -303,7 +303,7 @@ def _purchase_vps(provider, user_settings, args):
     else:
         choice = _confirmation("Purchase this option?", default="no")
     if choice:
-        _register_vps(provider, vps_option, user_settings)
+        _register(provider, vps_option, user_settings)
     else:
         return False
 
@@ -326,7 +326,7 @@ def _purchase_vpn(provider, user_settings, args):
         choice = _confirmation("Purchase this option?", default="no")
 
     if choice:
-        _register_vpn(provider, user_settings, options[0])
+        _register(provider, options[0], user_settings)
     else:
         return False
 
@@ -432,7 +432,7 @@ def _options_vpn(provider):
         print(row.format(option.name, option.protocol, bandwidth, speed, str(estimate), str(option.price)))
 
 
-def _register_vps(p, vps_option, settings):
+def _register(p, vps_option, settings):
     # For now use standard wallet implementation through Electrum
     # If wallet path is defined in config, use that.
     if settings.has_key('client', 'walletpath'):
@@ -442,18 +442,6 @@ def _register_vps(p, vps_option, settings):
 
     provider = p(settings)
     provider.purchase(wallet, vps_option)
-
-
-def _register_vpn(p, settings, option):
-    # For now use standard wallet implementation through Electrum
-    # If wallet path is defined in config, use that.
-    if 'walletpath' in settings.config:
-        wallet = Wallet(wallet_path=settings.get('client', 'walletpath'))
-    else:
-        wallet = Wallet()
-
-    provider = p(settings)
-    provider.purchase(wallet, option)
 
 
 def _get_provider(args):
