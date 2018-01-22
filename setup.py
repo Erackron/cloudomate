@@ -69,7 +69,8 @@ setup(
         'forex-python',
         'parameterized',
         'fake-useragent',
-        'CaseInsensitiveDict'
+        'CaseInsensitiveDict',
+        'ConfigParser'
     ],
 
     extras_require={
