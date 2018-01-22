@@ -39,17 +39,6 @@ class TestHosters(unittest.TestCase):
 
 
 class TestHosterAbstract(unittest.TestCase):
-    # TODO: Move to eventual VpsHoster test
-    def test_hoster_print(self):
-        hoster = VpsHoster(None)
-        options = [self._create_option()]
-        hoster.configurations = options
-        wallet.get_rates = MagicMock(return_value={'USD': 1.1})
-        hoster.gateway = MagicMock()
-        hoster.gateway.estimate_price.return_value = 1.2
-        hoster.print_configurations()
-        wallet.get_rates.assert_called_once()
-        hoster.gateway.estimate_price.assert_called_once()
 
     def test_create_browser(self):
         browser = Hoster._create_browser()
