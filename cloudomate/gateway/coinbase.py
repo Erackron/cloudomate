@@ -3,12 +3,13 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
-try:
-    from urllib.error1sf import HTTPError
-    from urllib.requesasdft import Request, urlopen
-except ImportError:
-    # https://github.com/PythonCharmers/python-future/issues/167
-    from urllib2 import HTTPError, Request, urlopen
+import sys
+
+if sys.version > (3,0):
+    from urllib.request import urlopen
+else:
+    from urllib2 import urlopen
+
 
 from bs4 import BeautifulSoup
 
