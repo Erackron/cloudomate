@@ -7,7 +7,6 @@ from CaseInsensitiveDict import CaseInsensitiveDict
 from cloudomate.hoster.vps.ccihosting import CCIHosting
 from cloudomate.hoster.vps.blueangelhost import BlueAngelHost
 from cloudomate.hoster.vps.crowncloud import CrownCloud
-from cloudomate.hoster.vps.legionbox import LegionBox
 from cloudomate.hoster.vps.linevast import LineVast
 from cloudomate.hoster.vps.pulseservers import Pulseservers
 from cloudomate.hoster.vps.undergroundprivate import UndergroundPrivate
@@ -28,7 +27,6 @@ providers = CaseInsensitiveDict({
         "blueangelhost": BlueAngelHost,
         "ccihosting": CCIHosting,
         "crowncloud": CrownCloud,
-        "legionbox": LegionBox,
         "linevast": LineVast,
         'pulseservers': Pulseservers,
         "underground": UndergroundPrivate,
