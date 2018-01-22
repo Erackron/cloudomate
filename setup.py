@@ -70,7 +70,9 @@ setup(
         'parameterized',
         'fake-useragent',
         'CaseInsensitiveDict',
-        'ConfigParser'
+        'ConfigParser',
+        'future',
+        'requests[security]'
     ],
 
     extras_require={
