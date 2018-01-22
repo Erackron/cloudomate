@@ -1,9 +1,13 @@
 import itertools
+import re
+import time
 
 from cloudomate.gateway.bitpay import BitPay
 from cloudomate.hoster.vps.solusvm_hoster import SolusvmHoster
 from cloudomate.hoster.vps.clientarea import ClientArea
 from cloudomate.hoster.vps.vps_hoster import VpsOption
+from cloudomate.hoster.vps.vps_hoster import VpsStatusResource
+from cloudomate.hoster.vps.vps_hoster import VpsStatus
 
 
 class BlueAngelHost(SolusvmHoster):
@@ -51,6 +55,24 @@ class BlueAngelHost(SolusvmHoster):
         options = itertools.chain(options, cls._parse_options(browser.get_current_page(), is_kvm=True))
         return list(options)
 
+    def get_status(self):
+        status = super().get_status()
+
+        # Retrieve the vserverid
+        page = self._browser.open(status.clientarea.url)
+        match = re.search(r'vserverid = (\d+)', page.text)
+        identifier = match.group(1)
+
+        millis = int(round(time.time() * 1000))  # Needed for some reason
+        page = self._browser.open('{}?vserverid={}&_={}'.format(self.CLIENT_DATA_URL, identifier, millis))
+        data = page.json()
+
+        memory = VpsStatusResource(self._convert_gigabyte(data['memoryused']), self._convert_gigabyte(data['memorytotal']))
+        storage = VpsStatusResource(self._convert_gigabyte(data['hddused']), self._convert_gigabyte(data['hddtotal']))
+        bandwidth = VpsStatusResource(self._convert_gigabyte(data['bandwidthused']), self._convert_gigabyte(data['bandwidthtotal']))
+
+        return VpsStatus(memory, storage, bandwidth, status.online, status.expiration, status.clientarea)
+
     def purchase(self, wallet, option):
         self._browser.open(option.purchase_url)
         self._submit_server_form()
@@ -69,6 +91,22 @@ class BlueAngelHost(SolusvmHoster):
     '''
     Hoster-specific methods that are needed to perform the actions
     '''
+
+    @staticmethod
+    def _convert_gigabyte(s):
+        n = float(s.split(' ')[0])
+        if 'KB' in s:
+            n /= 1024.0 * 1024.0
+        elif 'MB' in s:
+            n /= 1024.0
+        elif 'GB' in s:
+            pass
+        elif 'TB' in s:
+            n *= 1024.0
+        else:
+            raise ValueError('Unknown unit in string {}'.format(s))
+
+        return n
 
     @classmethod
     def _parse_options(cls, page, is_kvm=False):
