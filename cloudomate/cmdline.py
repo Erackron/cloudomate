@@ -213,7 +213,7 @@ def status(args):
                          '{:.2f}/{:.2f}'.format(s.bandwidth.used, s.bandwidth.total),
                          str(s.online),
                          s.expiration.isoformat()
-                        ))
+                         ))
 
     elif args.type == "vpn":
         row = "{:18}" * 2
@@ -287,7 +287,7 @@ def _purchase_vps(provider, user_settings, args):
     vps_option = configurations[vps_option]
     row_format = "{:15}" * 6
     print("Selected configuration:")
-    print((row_format.format("Name", "CPU", "RAM", "Storage", "Bandwidth", "Price")))
+    print((row_format.format("Name", "CPU", "RAM", "Storage", "Bandwidth", "Price (USD)")))
     bandwidth = "Unlimited" if vps_option.bandwidth == sys.maxsize else vps_option.bandwidth
     print((row_format.format(
         vps_option.name,
@@ -311,7 +311,13 @@ def _purchase_vps(provider, user_settings, args):
 def _purchase_vpn(provider, user_settings, args):
     print("Selected configuration:")
     options = provider.get_options()
-    _print_option_vpn(provider, options[0])
+    option = options[0]
+
+    row = "{:18}" * 5
+    print(row.format("Name", "Protocol", "Bandwidth", "Speed", "Price (USD)"))
+    bandwidth = "Unlimited" if option.bandwidth == sys.maxsize else str(option.bandwidth)
+    speed = "Unlimited" if option.speed == sys.maxsize else option.speed
+    print(row.format(option.name, option.protocol, bandwidth, speed, str(option.price)))
 
     if args.noconfirm or (
             user_settings.has_key('client', 'noconfirm') and user_settings.get('client', "noconfirm") == "1"):
@@ -465,7 +471,7 @@ def _get_provider(args):
     return providers[provider_type][provider]
 
 
-def ssh(args, command):
+def ssh(args, command=None):
     provider = _get_provider(args)
     name, _ = provider.get_metadata()
     user_settings = _get_user_settings(args, name)
@@ -478,13 +484,24 @@ def ssh(args, command):
 
     try:
         subprocess.call(commandline)
+        return True
     except OSError as e:
         print(e)
         print('Install sshpass to use this command')
+        return False
 
 
 def change_root_password_ssh(args):
-    ssh(args, 'echo "root:' + args.root_password + '" | chpasswd')
+    if ssh(args, 'echo "root:' + args.root_password + '" | chpasswd'):
+        provider = _get_provider(args)
+        name, _ = provider.get_metadata()
+        user_settings = _get_user_settings(args, name)
+        user_settings.put("server", "rootpw", args.root_password)
+        user_settings.save_settings()
+        print("Successfully set new root password in the config")
+    else:
+        print("Failed to set the new root password")
+        sys.exit(2)
 
 
 def _print_info_vps(info):
