@@ -25,6 +25,42 @@ class ClientArea(object):
         self.user_settings = user_settings
         self._login(user_settings.get('user', 'email'), user_settings.get('user', 'password'))
 
+
+
+
+    def get_service_usage(self, url):
+        page = self.browser.open(url)
+        matches = re.findall(r'([\d.]+) (KB|MB|GB|TB) of ([\d.]+) (KB|MB|GB|TB) Used', page.text)
+
+        # Returns (memory used, memory total, storage used, storage total, bandwidth used, bandwidth total) in GB
+        return (self._convert_gigabyte(matches[1][0], matches[1][1]),    # Memory used
+                self._convert_gigabyte(matches[1][2], matches[1][3]),    # Memory total
+                self._convert_gigabyte(matches[0][0], matches[0][1]),    # Storage used
+                self._convert_gigabyte(matches[0][2], matches[0][3]),    # Storage total
+                self._convert_gigabyte(matches[2][0], matches[2][1]),    # Bandwidth used
+                self._convert_gigabyte(matches[2][2], matches[2][3])    # Bandwidth total
+               )
+
+    @staticmethod
+    def _convert_gigabyte(number, unit):
+        u = unit.lower()
+        n = float(number)
+        if u == 'kb':
+            n /= 1024.0 * 1024.0
+        elif u == 'mb':
+            n /= 1024.0
+        elif u == 'gb':
+            pass
+        elif u == 'tb':
+            n *= 1024.0
+        else:
+            raise ValueError('Unknown unit {}'.format(u))
+
+        return n
+
+
+
+
     def _login(self, email, password):
         """
         Login into the clientarea. Exits program if unsuccesful.
@@ -99,12 +135,6 @@ class ClientArea(object):
                 'url': self.clientarea_url + tds[4].a['href'].split('.php')[1],
             })
         return self.services
-
-    def get_service_usage(self, url):
-        page = self.browser.open(url)
-        matches = re.findall(r'([\d.]+ (MB|KB|GB|TB)) of ([\d.]+ (MB|KB|GB|TB)) Used.*', page.text)
-        matches = list((match[0] + '/' + match[1]) for match in matches)
-        return matches
 
     def _get_vserverid(self, url):
         page = self.browser.open(url)

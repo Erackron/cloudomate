@@ -7,6 +7,7 @@ import datetime
 
 from cloudomate.hoster.vps.vps_hoster import VpsConfiguration
 from cloudomate.hoster.vps.vps_hoster import VpsHoster
+from cloudomate.hoster.vps.vps_hoster import VpsStatusResource
 from cloudomate.hoster.vps.vps_hoster import VpsStatus
 from cloudomate.hoster.vps.clientarea import ClientArea
 
@@ -34,14 +35,19 @@ class SolusvmHoster(VpsHoster):
         url = self.get_clientarea_url()
         clientarea = ClientArea(self._browser, url, self._settings)
 
+        # Online and expiration
         services = clientarea.get_services()
         service = services[0]  # Only look at the first one (cloudomate supports just one server per account)
         online = True if service['status'] == 'active' else False
         expiration = datetime.datetime.strptime(service['next_due_date'], '%Y-%m-%d')
 
-        # TODO: Also retrieve used bandwidth, etc. if possible
+        # Usage
+        usage = clientarea.get_service_usage(service['url'])
+        memory = VpsStatusResource(usage[0], usage[1])
+        storage = VpsStatusResource(usage[2], usage[3])
+        bandwidth = VpsStatusResource(usage[4], usage[5])
 
-        return VpsStatus(-1, -1, -1, online, expiration)
+        return VpsStatus(memory, storage, bandwidth, online, expiration)
 
     def set_root_password(self, password):
         url = self.get_clientarea_url()

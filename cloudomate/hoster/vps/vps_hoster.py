@@ -13,10 +13,10 @@ VpsOption = namedtuple('VpsOption', ['name',
                                      'connection',      # Connection speed in Gbps
                                      'price',           # Price in USD
                                      'purchase_url'])
-
-VpsStatus = namedtuple('VpsStatus', ['memory_used',     # Memory in GB
-                                     'storage_used',    # Storage in GB
-                                     'bandwidth_used',  # Bandwidth used in GB
+VpsStatusResource = namedtuple('VpsStatusResource', ['used', 'total'])
+VpsStatus = namedtuple('VpsStatus', ['memory',          # Memory VpsStatusResource in GB
+                                     'storage',         # Storage VpsStatusResource in GB
+                                     'bandwidth',       # Bandwidth VpsStatusResource in GB
                                      'online',          # Boolean
                                      'expiration'])     # Python Datetime object
 

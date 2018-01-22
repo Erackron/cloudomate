@@ -6,9 +6,8 @@ from cloudomate.hoster.vps.vps_hoster import VpsOption
 
 
 class CCIHosting(SolusvmHoster):
-
-    def __init__(self, settings):
-        super(CCIHosting, self).__init__(settings)
+    CART_URL = 'https://www.ccihosting.com/accounts/cart.php?a=confdomains'
+    OPTIONS_URL = 'https://www.ccihosting.com/offshore-vps.html'
 
     '''
     Information about the Hoster
@@ -41,13 +40,13 @@ class CCIHosting(SolusvmHoster):
     @classmethod
     def get_options(cls):
         browser = cls._create_browser()
-        browser.open('https://www.ccihosting.com/offshore-vps.html')
+        browser.open(self.OPTIONS_URL)
         return list(cls._parse_options(browser.get_current_page()))
 
     def purchase(self, wallet, option):
         self._browser.open(option.purchase_url)
         self._server_form()  # Add item to cart
-        self._browser.open('https://www.ccihosting.com/accounts/cart.php?a=confdomains')
+        self._browser.open(self.CART_URL)
 
         summary = self._browser.get_current_page().find('div', class_='summary-container')
         self._browser.follow_link(summary.find('a', class_='btn-checkout'))
