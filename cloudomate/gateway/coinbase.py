@@ -1,6 +1,14 @@
-import urllib.error
-import urllib.parse
-import urllib.request
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import division
+from __future__ import absolute_import
+from future import standard_library
+standard_library.install_aliases()
+import sys;
+if sys.version_info > (3,0):
+    from urllib.request import urlopen
+else:
+    from urllib2 import urlopen
 
 from bs4 import BeautifulSoup
 
@@ -19,7 +27,7 @@ class Coinbase(Gateway):
         :param url: the Coinbase URL like "https://www.coinbase.com/checkouts/2b30a03995ec62f15bdc54e8428caa87"
         :return: a tuple of the amount in BitCoin along with the address
         """
-        response = urllib.request.urlopen(url)
+        response = urlopen(url)
         site = BeautifulSoup(response, 'lxml')
         details = site.find('div', {'class': 'details'})
         bitcoin_url = details.p.a['href']

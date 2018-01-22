@@ -1,11 +1,21 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+from __future__ import absolute_import
+from builtins import str
+from builtins import object
+from future import standard_library
+standard_library.install_aliases()
 import json
 import os
 import subprocess
-import urllib.error
-import urllib.parse
-import urllib.request
+import sys
+if sys.version_info > (3,0):
+    from urllib.request import urlopen
+else:
+    from urllib2 import urlopen
 
 from forex_python.bitcoin import BtcConverter
 from mechanicalsoup import StatefulBrowser
@@ -49,7 +59,7 @@ def get_rate(currency='USD'):
 def fallback_get_rate(currency):
     # Sometimes the method above gets rate limited, in this case use
     # https: // blockchain.info / tobtc?currency = USD & value = 500
-    return float(urllib.request.urlopen('https://blockchain.info/tobtc?currency={0}&value=1'.format(currency)).read())
+    return float(urlopen('https://blockchain.info/tobtc?currency={0}&value=1'.format(currency)).read())
 
 
 def get_rates(currencies):
@@ -90,7 +100,7 @@ def get_network_fee(speed='halfHourFee'):
     return network_fee * AVG_TX_SIZE
 
 
-class Wallet:
+class Wallet(object):
     """
     Wallet implements an adapter to the wallet handler.
     Currently Wallet only supports electrum wallets without passwords for automated operation.

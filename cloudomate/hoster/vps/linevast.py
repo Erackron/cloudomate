@@ -1,9 +1,21 @@
+from __future__ import print_function
+from __future__ import unicode_literals
+from __future__ import division
+from __future__ import absolute_import
+from builtins import super
+from builtins import round
+from builtins import int
+from future import standard_library
+standard_library.install_aliases()
 import itertools
 import json
 import sys
-import urllib.error
-import urllib.parse
-import urllib.request
+if sys.version_info > (3,0):
+    from urllib.request import urlopen
+    from urllib.parse import urlencode
+else:
+    from urllib2 import urlopen
+    from urllib import urlencode
 
 from cloudomate.gateway.bitpay import BitPay
 from cloudomate.hoster.vps.solusvm_hoster import SolusvmHoster
@@ -100,7 +112,7 @@ class LineVast(SolusvmHoster):
             'opt': password,
             'vi': vi
         }
-        data = urllib.parse.urlencode(data)
+        data = urlencode(data)
         page = self._browser.open("https://vm.linevast.de/_vm_remote.php", data)
         if not self._check_set_rootpw(page.get_data()):
             print("Setting password failed")

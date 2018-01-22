@@ -1,11 +1,23 @@
 # coding=utf-8
+from __future__ import print_function
+from __future__ import unicode_literals
+from __future__ import division
+from __future__ import absolute_import
+from builtins import int
+from builtins import round
+from builtins import str
+from future import standard_library
+standard_library.install_aliases()
 import json
 import re
 import sys
 import time
-import urllib.error
-import urllib.parse
-import urllib.request
+if sys.version_info > (3,0):
+    from urllib.request import urlopen
+    from urllib.parse import urlencode
+else:
+    from urllib2 import urlopen
+    from urllib import urlencode
 from collections import OrderedDict
 
 from bs4 import BeautifulSoup
@@ -188,7 +200,7 @@ class ClientArea(object):
             'newrootpassword': password,
             'rootpassword': 'Change'
         }
-        data = urllib.parse.urlencode(data)
+        data = urlencode(data)
         url = self.clientarea_url.replace('clientarea', 'rootpassword') + '?id=' + service['id']
         page = self.browser.open(url, data)
         if 'Password Updated' in page.get_data():
