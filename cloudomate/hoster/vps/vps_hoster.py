@@ -14,11 +14,13 @@ VpsOption = namedtuple('VpsOption', ['name',
                                      'price',           # Price in USD
                                      'purchase_url'])
 VpsStatusResource = namedtuple('VpsStatusResource', ['used', 'total'])
+VpsStatusResourceNone  = VpsStatusResource(-1, -1)
 VpsStatus = namedtuple('VpsStatus', ['memory',          # Memory VpsStatusResource in GB
                                      'storage',         # Storage VpsStatusResource in GB
                                      'bandwidth',       # Bandwidth VpsStatusResource in GB
                                      'online',          # Boolean
-                                     'expiration'])     # Python Datetime object
+                                     'expiration',      # Python Datetime object
+                                     'clientarea'])     # Service information retrieved from the ClientArea (for overriding)
 
 
 class VpsHoster(Hoster):

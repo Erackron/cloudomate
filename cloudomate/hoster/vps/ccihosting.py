@@ -1,8 +1,12 @@
 import sys
+import re
 
 from cloudomate.gateway.coinbase import Coinbase
 from cloudomate.hoster.vps.solusvm_hoster import SolusvmHoster
 from cloudomate.hoster.vps.vps_hoster import VpsOption
+from cloudomate.hoster.vps.vps_hoster import VpsStatusResource
+from cloudomate.hoster.vps.vps_hoster import VpsStatus
+from cloudomate.hoster.vps.clientarea import ClientArea
 
 
 class CCIHosting(SolusvmHoster):
@@ -43,6 +47,27 @@ class CCIHosting(SolusvmHoster):
         browser.open(self.OPTIONS_URL)
         return list(cls._parse_options(browser.get_current_page()))
 
+    def get_status(self):
+        status = super().get_status()
+
+        # Usage
+        page = self._browser.open(status.clientarea.url)
+        matches = re.findall(r'([\d.]+) (KB|MB|GB|TB) of ([\d.]+) (KB|MB|GB|TB) Used', page.text)
+        usage = (self._convert_gigabyte(matches[1][0], matches[1][1]),    # Memory used
+                 self._convert_gigabyte(matches[1][2], matches[1][3]),    # Memory total
+                 self._convert_gigabyte(matches[0][0], matches[0][1]),    # Storage used
+                 self._convert_gigabyte(matches[0][2], matches[0][3]),    # Storage total
+                 self._convert_gigabyte(matches[2][0], matches[2][1]),    # Bandwidth used
+                 self._convert_gigabyte(matches[2][2], matches[2][3])     # Bandwidth total
+                )
+
+        memory = VpsStatusResource(usage[0], usage[1])
+        storage = VpsStatusResource(usage[2], usage[3])
+        bandwidth = VpsStatusResource(usage[4], usage[5])
+
+        # return status
+        return VpsStatus(memory, storage, bandwidth, status.online, status.expiration, status.clientarea)
+
     def purchase(self, wallet, option):
         self._browser.open(option.purchase_url)
         self._server_form()  # Add item to cart
@@ -60,6 +85,23 @@ class CCIHosting(SolusvmHoster):
     '''
     Hoster-specific methods that are needed to perform the actions
     '''
+
+    @staticmethod
+    def _convert_gigabyte(number, unit):
+        u = unit.lower()
+        n = float(number)
+        if u == 'kb':
+            n /= 1024.0 * 1024.0
+        elif u == 'mb':
+            n /= 1024.0
+        elif u == 'gb':
+            pass
+        elif u == 'tb':
+            n *= 1024.0
+        else:
+            raise ValueError('Unknown unit {}'.format(u))
+
+        return n
 
     def _server_form(self):
         """

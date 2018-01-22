@@ -1,14 +1,18 @@
 # coding=utf-8
 import json
-import re
 import sys
 import time
 import urllib.error
 import urllib.parse
 import urllib.request
 from collections import OrderedDict
+import datetime
+from collections import namedtuple
+from forex_python.converter import CurrencyRates
 
 from bs4 import BeautifulSoup
+
+ServiceInformation = namedtuple('ServiceInformation', ['name', 'price', 'next_due', 'status', 'url'])
 
 
 class ClientArea(object):
@@ -16,10 +20,14 @@ class ClientArea(object):
     Clientarea is the name of the control panel used in many VPS providers. The purpose of this class is to use
     this control panel in an automated manner.
     """
+    ACTION_POSTFIX = '?action=services&language=english'
+
 
     def __init__(self, browser, clientarea_url, user_settings):
-        self.browser = browser
-        self.clientarea_url = clientarea_url
+        self._browser = browser
+        self._services = None
+        self._url = clientarea_url
+
         self.home_page = None
         self.services = None
         self.user_settings = user_settings
@@ -28,35 +36,85 @@ class ClientArea(object):
 
 
 
-    def get_service_usage(self, url):
-        page = self.browser.open(url)
-        matches = re.findall(r'([\d.]+) (KB|MB|GB|TB) of ([\d.]+) (KB|MB|GB|TB) Used', page.text)
 
-        # Returns (memory used, memory total, storage used, storage total, bandwidth used, bandwidth total) in GB
-        return (self._convert_gigabyte(matches[1][0], matches[1][1]),    # Memory used
-                self._convert_gigabyte(matches[1][2], matches[1][3]),    # Memory total
-                self._convert_gigabyte(matches[0][0], matches[0][1]),    # Storage used
-                self._convert_gigabyte(matches[0][2], matches[0][3]),    # Storage total
-                self._convert_gigabyte(matches[2][0], matches[2][1]),    # Bandwidth used
-                self._convert_gigabyte(matches[2][2], matches[2][3])    # Bandwidth total
-               )
+    def get_services(self):
+        if self._services is None:
+            response = self._browser.open(self._url + self.ACTION_POSTFIX)
+            soup = self._browser.get_current_page()
+            rows = soup.select('table#tableServicesList tbody tr')
+            self._services = [self._parse_service_row(row) for row in rows]
 
-    @staticmethod
-    def _convert_gigabyte(number, unit):
-        u = unit.lower()
-        n = float(number)
-        if u == 'kb':
-            n /= 1024.0 * 1024.0
-        elif u == 'mb':
-            n /= 1024.0
-        elif u == 'gb':
-            pass
-        elif u == 'tb':
-            n *= 1024.0
-        else:
-            raise ValueError('Unknown unit {}'.format(u))
+        return self._services
 
-        return n
+    def get_services_first(self):
+        return self.get_services()[0]
+
+    def _parse_service_row(self, row):
+        columns = row.findAll('td')
+
+        name = columns[0].strong.text
+
+        price = columns[1].text
+        i = price.index('.')
+        p = float(price[1:i+3])
+        if 'EUR' in price:
+            c = CurrencyRates()
+            usd = c.convert("EUR", "USD", p)
+            usd = round(usd, 2)
+            p = usd
+
+        next_due = columns[2].span.text
+        next_due = datetime.datetime.strptime(next_due, '%Y-%m-%d')
+
+        status = columns[3].span.text.lower()
+
+        url = columns[4].a['href']
+        url = url.split('.php')
+        url = self._url + url[1]
+
+        return ServiceInformation(name, p, next_due, status, url)
+
+
+
+
+    # def _services(self):
+    #     if self.services is not None:
+    #         return
+    #     response = self._browser.open(self._url + "?action=services")
+    #     return self._extract_services(response.content)
+
+    # def _extract_services(self, html):
+    #     soup = BeautifulSoup(html, 'lxml')
+    #     rows = soup.find('table', {'id': 'tableServicesList'}).tbody.findAll('tr')
+    #     self.services = []
+    #     for row in rows:
+    #         tds = row.findAll('td', recursive=False)
+    #         classes = tds[3].span['class']
+    #         status = ''
+    #         for c in classes:
+    #             if 'status-' in c:
+    #                 status = c.split('status-')[1]
+
+    #         self.services.append({
+    #             'id': tds[4].a['href'].split('id=')[1],
+    #             'product': tds[0].strong.text,
+    #             'price': tds[1].contents[0],
+    #             'term': tds[1].contents[2],
+    #             'next_due_date': tds[2].text[0:10],
+    #             'status': status,
+    #             'url': self._url + tds[4].a['href'].split('.php')[1],
+    #         })
+    #     return self.services
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -66,24 +124,24 @@ class ClientArea(object):
         Login into the clientarea. Exits program if unsuccesful.
         :return: The clientarea homepage on succesful login.
         """
-        self.browser.open(self.clientarea_url)
-        self.browser.select_form('.logincontainer form')
-        self.browser['username'] = email
-        self.browser['password'] = password
-        page = self.browser.submit_selected()
+        self._browser.open(self._url)
+        self._browser.select_form('.logincontainer form')
+        self._browser['username'] = email
+        self._browser['password'] = password
+        page = self._browser.submit_selected()
         if "incorrect=true" in page.url:
             print("Login failure")
             sys.exit(2)
         self.home_page = page
 
-    def get_services(self):
-        """
-        Parse and list purchased services from clientarea_url?a=action.
-        :return: the list of services in dict format.
-        """
-        if self.services is None:
-            self._services()
-        return self.services
+    # def get_services(self):
+    #     """
+    #     Parse and list purchased services from clientarea_url?a=action.
+    #     :return: the list of services in dict format.
+    #     """
+    #     if self.services is None:
+    #         self._services()
+    #     return self.services
 
     def print_services(self):
         """
@@ -107,37 +165,8 @@ class ClientArea(object):
             i = i + 1
         return self.services
 
-    def _services(self):
-        if self.services is not None:
-            return
-        response = self.browser.open(self.clientarea_url + "?action=services")
-        return self._extract_services(response.content)
-
-    def _extract_services(self, html):
-        soup = BeautifulSoup(html, 'lxml')
-        rows = soup.find('table', {'id': 'tableServicesList'}).tbody.findAll('tr')
-        self.services = []
-        for row in rows:
-            tds = row.findAll('td', recursive=False)
-            classes = tds[3].span['class']
-            status = ''
-            for c in classes:
-                if 'status-' in c:
-                    status = c.split('status-')[1]
-
-            self.services.append({
-                'id': tds[4].a['href'].split('id=')[1],
-                'product': tds[0].strong.text,
-                'price': tds[1].contents[0],
-                'term': tds[1].contents[2],
-                'next_due_date': tds[2].text[0:10],
-                'status': status,
-                'url': self.clientarea_url + tds[4].a['href'].split('.php')[1],
-            })
-        return self.services
-
     def _get_vserverid(self, url):
-        page = self.browser.open(url)
+        page = self._browser.open(url)
         match = re.search(r'vserverid = (\d+)', page.text)
         return match.group(1)
 
@@ -156,7 +185,7 @@ class ClientArea(object):
         self._ensure_active(service)
         vserverid = self._get_vserverid(service['url'])
         millis = int(round(time.time() * 1000))
-        page = self.browser.open(client_data_url + '?vserverid=%s&_=%s' % (vserverid, millis))
+        page = self._browser.open(client_data_url + '?vserverid=%s&_=%s' % (vserverid, millis))
         return json.loads(page.get_data())
 
     def get_client_data_info_dict(self, client_data_url):
@@ -195,10 +224,10 @@ class ClientArea(object):
         millis = int(round(time.time() * 1000))
 
         vserverid = self._get_vserverid(service['url'])
-        url = self.clientarea_url + '?action=productdetails&id=%s&vserverid=%s&modop=custom&a=ChangeRootPassword' \
+        url = self._url + '?action=productdetails&id=%s&vserverid=%s&modop=custom&a=ChangeRootPassword' \
                                     '&newrootpassword=%s&ajax=1&ac=Custom_ChangeRootPassword&_=%s' \
               % (service['id'], vserverid, password, millis)
-        response = self.browser.open(url)
+        response = self._browser.open(url)
         response_json = json.loads(response.text)
         if response_json['success'] is True:
             print("Password changed successfully")
@@ -219,8 +248,8 @@ class ClientArea(object):
             'rootpassword': 'Change'
         }
         data = urllib.parse.urlencode(data)
-        url = self.clientarea_url.replace('clientarea', 'rootpassword') + '?id=' + service['id']
-        page = self.browser.open(url, data)
+        url = self._url.replace('clientarea', 'rootpassword') + '?id=' + service['id']
+        page = self._browser.open(url, data)
         if 'Password Updated' in page.get_data():
             print("Password changed successfully")
             return True
@@ -242,7 +271,7 @@ class ClientArea(object):
         """
         service = self.get_specified_or_active_service()
         self._ensure_active(service)
-        page = self.browser.open(service['url'])
+        page = self._browser.open(service['url'])
         return self._extract_service_info(page.text)
 
     def get_ip(self):
@@ -285,7 +314,7 @@ class ClientArea(object):
         return 0
 
     def get_emails(self):
-        page = self.browser.open(self.clientarea_url + "?action=emails")
+        page = self._browser.open(self._url + "?action=emails")
         return self._extract_emails(page.get_data())
 
     @staticmethod

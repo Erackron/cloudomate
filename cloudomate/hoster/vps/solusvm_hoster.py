@@ -7,7 +7,7 @@ import datetime
 
 from cloudomate.hoster.vps.vps_hoster import VpsConfiguration
 from cloudomate.hoster.vps.vps_hoster import VpsHoster
-from cloudomate.hoster.vps.vps_hoster import VpsStatusResource
+from cloudomate.hoster.vps.vps_hoster import VpsStatusResourceNone
 from cloudomate.hoster.vps.vps_hoster import VpsStatus
 from cloudomate.hoster.vps.clientarea import ClientArea
 
@@ -18,13 +18,21 @@ class SolusvmHoster(VpsHoster):
     This makes it possible to fill in the registration form in a similar manner for all Solusvm subclasses.
     """
 
+    def __init__(self, settings):
+        super().__init__(settings)
+        self._clientarea = None
+
+    def _create_clientarea(self):
+        if self._clientarea is None:
+            self._clientarea = ClientArea(self._browser, self.get_clientarea_url(), self._settings)
+        return self._clientarea
+
     '''
     Methods that are the same for all subclasses
     '''
 
     def get_configuration(self):
-        url = self.get_clientarea_url()
-        clientarea = ClientArea(self._browser, url, self._settings)
+        clientarea = self._create_clientarea()
 
         ip = clientarea.get_ip()
         password = self._settings.get('server', 'rootpw')
@@ -32,22 +40,13 @@ class SolusvmHoster(VpsHoster):
         return VpsConfiguration(ip, password)
 
     def get_status(self):
-        url = self.get_clientarea_url()
-        clientarea = ClientArea(self._browser, url, self._settings)
+        clientarea = self._create_clientarea()
 
-        # Online and expiration
-        services = clientarea.get_services()
-        service = services[0]  # Only look at the first one (cloudomate supports just one server per account)
-        online = True if service['status'] == 'active' else False
-        expiration = datetime.datetime.strptime(service['next_due_date'], '%Y-%m-%d')
+        service = clientarea.get_services_first()
+        online = True if service.status == 'active' else False
+        expiration = service.next_due
 
-        # Usage
-        usage = clientarea.get_service_usage(service['url'])
-        memory = VpsStatusResource(usage[0], usage[1])
-        storage = VpsStatusResource(usage[2], usage[3])
-        bandwidth = VpsStatusResource(usage[4], usage[5])
-
-        return VpsStatus(memory, storage, bandwidth, online, expiration)
+        return VpsStatus(VpsStatusResourceNone, VpsStatusResourceNone, VpsStatusResourceNone, online, expiration, service)
 
     def set_root_password(self, password):
         url = self.get_clientarea_url()
