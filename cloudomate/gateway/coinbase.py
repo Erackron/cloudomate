@@ -3,15 +3,12 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
-# Python 2 and 3: alternative 4
 try:
-    from urllib.parse import urlparse, urlencode
-    from urllib.request import urlopen, Request
     from urllib.error import HTTPError
+    from urllib.request import Request, urlopen
 except ImportError:
-    from urlparse import urlparse
-    from urllib import urlencode
-    from urllib2 import urlopen, Request, HTTPError
+    # https://github.com/PythonCharmers/python-future/issues/167
+    from urllib2 import HTTPError, Request, urlopen
 
 from bs4 import BeautifulSoup
 
