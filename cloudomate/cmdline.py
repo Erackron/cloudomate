@@ -17,23 +17,25 @@ from cloudomate.wallet import Wallet
 from cloudomate import wallet as wallet_util
 
 
-import inspect
+def _map_providers_to_dict(provider_list):
+    return CaseInsensitiveDict(dict((provider.get_metadata()[0], provider) for provider in provider_list))
 
 
 commands = ["options", "purchase", "list"]
 types = ["vps", "vpn"]
+
 providers = CaseInsensitiveDict({
-    "vps": CaseInsensitiveDict({
-        "blueangelhost": BlueAngelHost,
-        "ccihosting": CCIHosting,
-        "crowncloud": CrownCloud,
-        "linevast": LineVast,
-        'pulseservers': Pulseservers,
-        "underground": UndergroundPrivate,
-    }),
-    "vpn": CaseInsensitiveDict({
-        "azirevpn": AzireVpn,
-    })
+    "vps": _map_providers_to_dict([
+        BlueAngelHost,
+        CCIHosting,
+        CrownCloud,
+        LineVast,
+        Pulseservers,
+        UndergroundPrivate,
+    ]),
+    "vpn": _map_providers_to_dict([
+        AzireVpn,
+    ])
 })
 
 
@@ -167,7 +169,6 @@ def add_parser_vps_setrootpw(subparsers):
     parser_setrootpw.add_argument("-n", "--number", help="The number of the VPS service to change the password for")
     parser_setrootpw.add_argument("-e", "--email", help="The login email address")
     parser_setrootpw.add_argument("-pw", "--password", help="The login password")
-    #parser_setrootpw.add_argument("-p", "--rootpw", help="The new root password", required=True)
     parser_setrootpw.set_defaults(func=set_rootpw)
 
 
@@ -215,7 +216,8 @@ def status(args):
     if args.type == "vps":
         row = "{:18}" * 5
         print(row.format("Memory used (GB)", "Storage used (GB)", "Bandwidth used", "Online", "Expiration"))
-        print(row.format(str(s.memory_used), str(s.storage_used), str(s.bandwidth_used), str(s.online), s.expiration.isoformat()))
+        print(row.format(str(s.memory_used), str(s.storage_used), str(s.bandwidth_used), str(s.online),
+                         s.expiration.isoformat()))
 
     elif args.type == "vpn":
         row = "{:18}" * 2
@@ -299,7 +301,8 @@ def _purchase_vps(provider, user_settings, args):
         str(bandwidth),
         str(vps_option.price))))
 
-    if args.noconfirm or (user_settings.has_key('client', 'noconfirm') and user_settings.get('client', "noconfirm") == "1"):
+    if args.noconfirm or (
+            user_settings.has_key('client', 'noconfirm') and user_settings.get('client', "noconfirm") == "1"):
         choice = True
     else:
         choice = _confirmation("Purchase this option?", default="no")
@@ -314,7 +317,8 @@ def _purchase_vpn(provider, user_settings, args):
     options = provider.get_options()
     _print_option_vpn(provider, options[0])
 
-    if args.noconfirm or (user_settings.has_key('client', 'noconfirm') and user_settings.get('client', "noconfirm") == "1"):
+    if args.noconfirm or (
+            user_settings.has_key('client', 'noconfirm') and user_settings.get('client', "noconfirm") == "1"):
         choice = True
     else:
         choice = _confirmation("Purchase this option?", default="no")
@@ -384,7 +388,8 @@ def _options_vps(p):
 
     # Print heading
     row = "{:<5}" + "{:20}" * 8
-    print(row.format("#", "Name", "Cores", "Memory (GB)", "Storage (GB)", "Bandwidth", "Connection (Gbit/s)", "Est. Price (mBTC)", "Price (USD)"))
+    print(row.format("#", "Name", "Cores", "Memory (GB)", "Storage (GB)", "Bandwidth", "Connection (Gbit/s)",
+                     "Est. Price (mBTC)", "Price (USD)"))
 
     for i, option in enumerate(options):
         bandwidth = "Unlimited" if option.bandwidth == sys.maxsize else str(option.bandwidth)
@@ -397,7 +402,8 @@ def _options_vps(p):
         estimate = round(1000 * estimate, 2)  # mBTC
 
         # Print everything
-        print(row.format(i, option.name, str(option.cores), str(option.memory), str(option.storage), bandwidth, str(option.connection), str(estimate), str(option.price)))
+        print(row.format(i, option.name, str(option.cores), str(option.memory), str(option.storage), bandwidth,
+                         str(option.connection), str(estimate), str(option.price)))
 
 
 def _options_vpn(provider):
@@ -436,7 +442,6 @@ def _register_vps(p, vps_option, settings):
     provider.purchase(wallet, vps_option)
 
 
-
 def _register_vpn(p, settings, option):
     # For now use standard wallet implementation through Electrum
     # If wallet path is defined in config, use that.
@@ -472,7 +477,9 @@ def ssh(args):
     c = p.get_configuration()
 
     try:
-        subprocess.call(['sshpass', '-p', user_settings.get('server', 'rootpw'), 'ssh', '-o', 'StrictHostKeyChecking=no', 'root@' + c.ip])
+        subprocess.call(
+            ['sshpass', '-p', user_settings.get('server', 'rootpw'), 'ssh', '-o', 'StrictHostKeyChecking=no',
+             'root@' + c.ip])
     except OSError as e:
         print(e)
         print('Install sshpass to use this command')
@@ -498,7 +505,7 @@ def _print_info_vpn(info):
     print("\nsettings.ovpn")
     print(header)
     print(ovpn)
-    print(header)    
+    print(header)
 
 
 if __name__ == '__main__':

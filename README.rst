@@ -41,7 +41,6 @@ Currently the following VPS providers are implemented: ::
    blueangelhost  https://www.blueangelhost.com/
    ccihosting     http://www.ccihosting.com/
    crowncloud     http://crowncloud.net/
-   legionbox      https://legionbox.com/
    linevast       https://linevast.de/
    pulseservers   https://pulseservers.com/
    underground    https://undergroundprivate.com
