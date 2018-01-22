@@ -5,7 +5,7 @@ from __future__ import absolute_import
 
 import sys
 
-if sys.version > (3,0):
+if sys.version_info > (3, 0):
     from urllib.request import urlopen
 else:
     from urllib2 import urlopen
