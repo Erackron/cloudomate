@@ -2,19 +2,16 @@ from __future__ import unicode_literals
 from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
-#from future import standard_library
-#standard_library.install_aliases()
 
+# Python 2 and 3: alternative 4
 try:
-    import urllib.error
-    import urllib.request
+    from urllib.parse import urlparse, urlencode
+    from urllib.request import urlopen, Request
+    from urllib.error import HTTPError
 except ImportError:
-    # https://github.com/PythonCharmers/python-future/issues/167
-    import urllib2
-
-#import urllib.error
-#import urllib.parse
-#import urllib.request
+    from urlparse import urlparse
+    from urllib import urlencode
+    from urllib2 import urlopen, Request, HTTPError
 
 from bs4 import BeautifulSoup
 
