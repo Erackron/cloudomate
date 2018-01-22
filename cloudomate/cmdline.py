@@ -1,6 +1,8 @@
 import subprocess
 import sys
 from argparse import ArgumentParser
+import os
+from os import path
 
 from CaseInsensitiveDict import CaseInsensitiveDict
 
@@ -159,6 +161,10 @@ def add_parser_info(subparsers, provider_type):
                              help="The number of the %s service" % provider_type.upper())
     parser_info.add_argument("-e", "--email", help="The login email address")
     parser_info.add_argument("-pw", "--password", help="The login password")
+
+    if provider_type == "vpn":
+        parser_info.add_argument("-o", "--ovpn", help="Save the ovpn file to the specified location")
+
     parser_info.set_defaults(func=info)
 
 
@@ -186,15 +192,18 @@ def info(args):
     provider = _get_provider(args)
     name, _ = provider.get_metadata()
     user_settings = _get_user_settings(args, name)
-    print(("Info for " + name))
 
-    p = provider(user_settings)
-    c = p.get_configuration()
+    config = provider(user_settings).get_configuration()
 
     if args.type == "vps":
-        _print_info_vps(c)
+        print(("Info for " + name))
+        _print_info_vps(config)
     elif args.type == "vpn":
-        _print_info_vpn(c)
+        if args.ovpn:
+            _save_info_vpn(config, args.ovpn)
+        else:
+            print(("Info for " + name))
+            _print_info_vpn(config)
 
 
 def status(args):
@@ -513,6 +522,23 @@ def _print_info_vpn(info):
     print(header)
     print(ovpn)
     print(header)
+
+
+def _save_info_vpn(info, ovpn):
+    if not ovpn.endswith('.ovpn'):
+        ovpn = ovpn + '.ovpn'
+
+    ovpn = path.normcase(path.normpath(path.join(os.getcwd(), ovpn)))
+    dir, _ = path.split(ovpn)
+    credentials = 'credentials.conf'
+
+    with open(ovpn, 'w', encoding='utf-8') as ovpn_file:
+        ovpn_file.write(info.ovpn + '\nauth-user-pass ' + credentials)
+
+    with open(path.join(dir, credentials), 'w', encoding='utf-8') as credentials_file:
+        credentials_file.writelines([info.username, info.password])
+
+    print("Saved VPN configuration to " + ovpn)
 
 
 if __name__ == '__main__':
