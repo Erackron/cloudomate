@@ -11,8 +11,9 @@ from mechanicalsoup import StatefulBrowser
 
 from cloudomate import wallet as wallet_util
 
+from future.utils import with_metaclass
 
-class Hoster(metaclass=ABCMeta):
+class Hoster(with_metaclass(ABCMeta)):
     def __init__(self, settings):
         self._browser = self._create_browser()
         self._settings = settings
