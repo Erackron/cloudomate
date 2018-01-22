@@ -1,16 +1,7 @@
-import re
-import sys
-from collections import OrderedDict
-
-from bs4 import BeautifulSoup
-
 from cloudomate.gateway.bitpay import BitPay
-from cloudomate.hoster.hoster import Hoster
 from cloudomate.hoster.vps.solusvm_hoster import SolusvmHoster
-from cloudomate.hoster.vps.clientarea import ClientArea
-from cloudomate.hoster.vps.vps_hoster import VpsConfiguration, VpsOption
+from cloudomate.hoster.vps.vps_hoster import VpsOption
 from mechanicalsoup import LinkNotFoundError
-from cloudomate.hoster.vps import vps_hoster
 
 
 class CrownCloud(SolusvmHoster):
@@ -85,7 +76,7 @@ class CrownCloud(SolusvmHoster):
             for row in table.findAll('tr'):
                 if len(row.findAll('td')) > 0:  # Ignore headers
                     r = cls._parse_row(row)
-                    if not r is None:
+                    if r is not None:
                         yield r
 
     @staticmethod
@@ -115,11 +106,11 @@ class CrownCloud(SolusvmHoster):
 
         connection = details[4].text
         i = connection.index('Gbps')
-        connection = int(connection[i-1])
+        connection = int(connection[i - 1])
 
         purchase_url = details[7].find('a')['href']
 
-        return vps_hoster.VpsOption(name, cores, memory, storage, bandwidth, connection, price, purchase_url)
+        return VpsOption(name, cores, memory, storage, bandwidth, connection, price, purchase_url)
 
     def _submit_server_form(self):
         try:
@@ -160,55 +151,3 @@ class CrownCloud(SolusvmHoster):
         self._browser.select_form(nr=0)
         return self._browser.submit_selected()
 
-
-
-
-
-    # def set_root_password(self, password):
-    #     """Set Hoster root password
-
-    #     :param password: The root password to set
-    #     """
-    #     print("CrownCloud does not support changing root password through their configuration panel.")
-    #     clientarea = ClientArea(self._browser, self.clientarea_url, self._settings)
-    #     (ip, user, rootpw) = self._extract_vps_information(clientarea)
-    #     print(("IP: %s" % ip))
-    #     print(("Root password: %s\n" % rootpw))
-
-    #     print("https://crownpanel.com")
-    #     print(("Username: %s" % user))
-    #     print(("Password: %s\n" % rootpw))
-
-
-    # # TODO: Refactor to return VpsStatus
-    # def get_status(self):
-    #     clientarea = ClientArea(self._browser, self.clientarea_url, self._settings)
-    #     return clientarea.print_services()
-
-    # def _extract_vps_information(self, clientarea):
-    #     emails = clientarea.get_emails()
-    #     for email in emails:
-    #         if 'New VPS Information' in email['title']:
-    #             page = self._browser.open("https://crowncloud.net/clients/viewemail.php?id=" + email['id'])
-    #             (ip, user, rootpw) = self._extract_email_info(page.get_data())
-    #             return ip, user, rootpw
-    #     return None
-
-    # @staticmethod
-    # def _extract_email_info(data):
-    #     soup = BeautifulSoup(data, 'lxml')
-    #     text = soup.find('td', {'class': 'bodyContent'}).text
-    #     ip_match = re.search(r'Main IP: (\d+\.\d+\.\d+\.\d+)', text)
-    #     user_match = re.search(r'Username: (\w+)', text)
-    #     rootpw = re.search(r'Root Password: (\w+)You', text)
-    #     return ip_match.group(1), user_match.group(1), rootpw.group(1)
-
-    # def info(self, user_settings):
-    #     clientarea = ClientArea(self._browser, self.clientarea_url, user_settings)
-    #     (ip, user, rootpw) = self._extract_vps_information(clientarea)
-    #     return OrderedDict([
-    #         ('IP address', ip),
-    #         ('Control panel', 'https://crownpanel.com/'),
-    #         ('Username', user),
-    #         ('Password', rootpw),
-    #     ])

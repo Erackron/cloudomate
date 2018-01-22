@@ -169,15 +169,7 @@ def add_parser_vps_setrootpw(subparsers):
     parser_setrootpw.add_argument("-n", "--number", help="The number of the VPS service to change the password for")
     parser_setrootpw.add_argument("-e", "--email", help="The login email address")
     parser_setrootpw.add_argument("-pw", "--password", help="The login password")
-    parser_setrootpw.set_defaults(func=set_rootpw)
-
-
-def set_rootpw(args):
-    provider = _get_provider(args)
-    name, _ = provider.get_metadata()
-    user_settings = _get_user_settings(args, name)
-    p = provider(user_settings)
-    p.set_root_password(args.root_password)
+    parser_setrootpw.set_defaults(func=change_root_password_ssh)
 
 
 def get_ip(args):
@@ -473,20 +465,26 @@ def _get_provider(args):
     return providers[provider_type][provider]
 
 
-def ssh(args):
+def ssh(args, command):
     provider = _get_provider(args)
     name, _ = provider.get_metadata()
     user_settings = _get_user_settings(args, name)
-    p = provider(user_settings)
-    c = p.get_configuration()
+    config = provider(user_settings).get_configuration()
+    commandline = ['sshpass', '-p', config.root_password, 'ssh', '-o', 'StrictHostKeyChecking=no',
+                   'root@' + config.ip]
+
+    if command:
+        commandline.append(command)
 
     try:
-        subprocess.call(
-            ['sshpass', '-p', user_settings.get('server', 'rootpw'), 'ssh', '-o', 'StrictHostKeyChecking=no',
-             'root@' + c.ip])
+        subprocess.call(commandline)
     except OSError as e:
         print(e)
         print('Install sshpass to use this command')
+
+
+def change_root_password_ssh(args):
+    ssh(args, 'echo "root:' + args.root_password + '" | chpasswd')
 
 
 def _print_info_vps(info):
