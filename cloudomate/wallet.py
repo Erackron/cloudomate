@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
@@ -6,7 +7,7 @@ from builtins import str
 from builtins import object
 from future import standard_library
 standard_library.install_aliases()
-# -*- coding: utf-8 -*-
+
 
 import json
 import os
@@ -31,7 +32,7 @@ def determine_currency(text):
     # Naive approach, for example NZ$ also contains $
     if '$' in text or 'usd' in text.lower():
         return 'USD'
-    elif '€' in text or 'eur' in text.lower():
+    elif '€'.decode('utf8') in text or 'eur' in text.lower():
         return 'EUR'
     else:
         return None
