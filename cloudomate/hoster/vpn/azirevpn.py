@@ -27,7 +27,7 @@ class AzireVpn(vpn_hoster.VpnHoster):
 
     @staticmethod
     def get_metadata():
-        return ("AzireVPN", "https://www.azirevpn.com")
+        return "AzireVPN", "https://www.azirevpn.com/"
 
     @staticmethod
     def get_required_settings():

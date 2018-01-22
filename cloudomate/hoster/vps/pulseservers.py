@@ -26,7 +26,7 @@ class Pulseservers(SolusvmHoster):
 
     @staticmethod
     def get_metadata():
-        return 'PulseServers', 'https://pulseservers.com'
+        return 'PulseServers', 'https://pulseservers.com/'
 
     @staticmethod
     def get_required_settings():
