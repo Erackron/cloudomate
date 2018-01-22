@@ -100,6 +100,12 @@ class ClientArea(object):
             })
         return self.services
 
+    def get_service_usage(self, url):
+        page = self.browser.open(url)
+        matches = re.findall(r'([\d.]+ (MB|KB|GB|TB)) of ([\d.]+ (MB|KB|GB|TB)) Used.*', page.text)
+        matches = list((match[0] + '/' + match[1]) for match in matches)
+        return matches
+
     def _get_vserverid(self, url):
         page = self.browser.open(url)
         match = re.search(r'vserverid = (\d+)', page.text)
@@ -161,7 +167,7 @@ class ClientArea(object):
         vserverid = self._get_vserverid(service['url'])
         url = self.clientarea_url + '?action=productdetails&id=%s&vserverid=%s&modop=custom&a=ChangeRootPassword' \
                                     '&newrootpassword=%s&ajax=1&ac=Custom_ChangeRootPassword&_=%s' \
-                                    % (service['id'], vserverid, password, millis)
+              % (service['id'], vserverid, password, millis)
         response = self.browser.open(url)
         response_json = json.loads(response.text)
         if response_json['success'] is True:
