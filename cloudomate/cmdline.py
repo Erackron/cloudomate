@@ -13,6 +13,7 @@ import sys
 from argparse import ArgumentParser
 import os
 from os import path
+import io
 
 from CaseInsensitiveDict import CaseInsensitiveDict
 
@@ -542,10 +543,10 @@ def _save_info_vpn(info, ovpn):
     dir, _ = path.split(ovpn)
     credentials = 'credentials.conf'
 
-    with open(ovpn, 'w', encoding='utf-8') as ovpn_file:
+    with io.open(ovpn, 'w', encoding='utf-8') as ovpn_file:
         ovpn_file.write(info.ovpn + '\nauth-user-pass ' + credentials)
 
-    with open(path.join(dir, credentials), 'w', encoding='utf-8') as credentials_file:
+    with io.open(path.join(dir, credentials), 'w', encoding='utf-8') as credentials_file:
         credentials_file.writelines([info.username, info.password])
 
     print("Saved VPN configuration to " + ovpn)
