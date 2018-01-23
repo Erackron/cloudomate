@@ -228,15 +228,21 @@ def status(args):
     s = p.get_status()
 
     if args.type == "vps":
-        row = "{:20}" * 5
-        print(row.format("Memory used (GB)", "Storage used (GB)", "Bandwidth used (GB)", "Online", "Expiration"))
-        print(row.format('{:.2f}/{:.2f}'.format(s.memory.used, s.memory.total),
-                         '{:.2f}/{:.2f}'.format(s.storage.used, s.storage.total),
-                         '{:.2f}/{:.2f}'.format(s.bandwidth.used, s.bandwidth.total),
-                         str(s.online),
-                         s.expiration.isoformat()
-                         ))
-
+        # If we don't currently support usage statistics for this provider
+        if s.memory.used == -1.0:
+            row = "{:20}" * 2
+            print(row.format("Online", "Expiration"))
+            print(row.format(str(s.online), s.expiration.isoformat()))
+        else:
+            row = "{:20}" * 5
+            print(row.format("Memory used (GB)", "Storage used (GB)", "Bandwidth used (GB)", "Online", "Expiration"))
+            print(row.format(
+                '{:.2f}/{:.2f}'.format(s.memory.used, s.memory.total),
+                '{:.2f}/{:.2f}'.format(s.storage.used, s.storage.total),
+                '{:.2f}/{:.2f}'.format(s.bandwidth.used, s.bandwidth.total),
+                str(s.online),
+                s.expiration.isoformat()
+            ))
     elif args.type == "vpn":
         row = "{:18}" * 2
         print(row.format("Online", "Expiration"))
