@@ -16,6 +16,8 @@ from cloudomate.hoster.vps.vps_hoster import VpsHoster
 from cloudomate.hoster.vps.vps_hoster import VpsStatus
 from cloudomate.hoster.vps.vps_hoster import VpsStatusResourceNone
 
+from builtins import super
+
 standard_library.install_aliases()
 
 
