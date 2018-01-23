@@ -5,6 +5,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import datetime
+import re
 import sys
 from builtins import round
 from collections import namedtuple
@@ -14,10 +15,6 @@ from forex_python.converter import CurrencyRates
 from future import standard_library
 
 standard_library.install_aliases()
-if sys.version_info > (3, 0):
-    from urllib.parse import urlencode
-else:
-    from urllib import urlencode
 
 ClientAreaService = namedtuple('ClientAreaService', ['name', 'price', 'next_due', 'status', 'url'])
 
@@ -42,10 +39,13 @@ class ClientArea(object):
         self._browser.open(service.url)
         soup = self._browser.get_current_page()
         rows = soup.select('div#domain > div.row')
-        for row in rows:
-            divs = row.findAll('div')
-            if 'IP' in divs[0].strong.text:
-                return divs[1].text.strip()
+        if len(rows) > 0:
+            for row in rows:
+                divs = row.findAll('div')
+                if 'IP' in divs[0].strong.text:
+                    return divs[1].text.strip()
+        else:
+            return re.search(r'\b((?:\d{1,3}\.){3}\d{1,3})\b', soup.text).group(0)
 
     def get_services(self):
         if self._services is None:
