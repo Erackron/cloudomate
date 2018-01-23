@@ -19,7 +19,7 @@ Cloudomate is an unpermissioned open compute API which provides an automated way
 Requirements
 ============
 
-* Python 3
+* Python 2 or 3
 * Works on Linux, Mac OSX, BSD
 * An active Electrum_ wallet with sufficient funds
 
@@ -38,12 +38,12 @@ VPS
 
 Currently the following VPS providers are implemented: ::
 
-   blueangelhost  https://www.blueangelhost.com/
-   ccihosting     http://www.ccihosting.com/
-   crowncloud     http://crowncloud.net/
-   linevast       https://linevast.de/
-   pulseservers   https://pulseservers.com/
-   underground    https://undergroundprivate.com
+   blueangelhost         https://www.blueangelhost.com/
+   ccihosting            http://www.ccihosting.com/
+   crowncloud            http://crowncloud.net/
+   linevast              https://linevast.de/
+   pulseservers          https://pulseservers.com/
+   undergroundprivate    https://undergroundprivate.com/
 
 This same list can be accessed through the list command. ::
 
@@ -71,25 +71,29 @@ location for the configuration file is `$HOME/.config/cloudomate.cfg`.
 A configuration file looks like this ::
 
    [user]
-   email = 
+   email =
    firstname =
    lastname =
+   password =
    companyname =
    phonenumber =
-   password = 
+   username =
 
    [address]
-   address = 
-   city = 
-   state = 
+   address =
+   city =
+   state =
    countrycode =
-   zipcode = 
+   zipcode =
+
+   [payment]
+   walletpath =
 
    [server]
-   root_password =
-   ns1 = 
-   ns2 = 
-   hostname = 
+   ns1 =
+   ns2 =
+   hostname =
+   rootpw =
 
 
 Section can be overridden for specific providers by adding a section,
@@ -195,13 +199,22 @@ and the instance is paid through an Electrum wallet. ::
 Manage
 ------
 
-The following functions can be used to manage a purchased VPS instances ::
+VPS
+~~~~~~~~~~~
 
-    status              Get the status of the services.
+The following functions can be used to manage a purchased VPS instance ::
+
+    status              Get the status of the service.
+    info                Get information of the specified service
     setrootpw           Set the root password of the last activated service.
     getip               Get the ip of the specified service.
 
+VPN
+~~~~~~~~~~~
+The following functions can be used to manage a purchased VPN instance ::
 
+    status              Get the status of the service.
+    info                Get configuration of the specified service
 
 Tests
 =====

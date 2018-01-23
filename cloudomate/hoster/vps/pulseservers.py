@@ -1,11 +1,18 @@
-from collections import OrderedDict
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+
+import sys
+from builtins import int
+
+from future import standard_library
 
 from cloudomate.gateway.coinbase import Coinbase
-from cloudomate.hoster.vps.solusvm_hoster import SolusvmHoster
-from cloudomate.wallet import determine_currency
-
 from cloudomate.hoster.vps import vps_hoster
-import sys
+from cloudomate.hoster.vps.solusvm_hoster import SolusvmHoster
+
+standard_library.install_aliases()
 
 
 class Pulseservers(SolusvmHoster):

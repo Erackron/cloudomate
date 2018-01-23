@@ -1,8 +1,18 @@
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+
 import os
 import unittest
+from builtins import open
+
+from future import standard_library
+from mock import MagicMock
 
 from cloudomate.hoster.vps.clientarea import ClientArea
-from mock.mock import MagicMock
+
+standard_library.install_aliases()
 
 
 class TestClientArea(unittest.TestCase):

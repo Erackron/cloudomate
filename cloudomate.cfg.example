@@ -1,4 +1,4 @@
-[User]
+[user]
 email = 
 firstName = 
 lastName = 
@@ -6,7 +6,7 @@ companyName =
 phoneNumber = 
 password = 
 
-[Address]
+[address]
 address = 
 city = 
 state = 
@@ -16,7 +16,7 @@ zipcode =
 [payment]
 walletpath =
 
-[Server]
+[server]
 root_password =
 ns1 = 
 ns2 = 

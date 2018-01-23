@@ -1,19 +1,24 @@
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+
 import unittest
 
 import requests
+from future import standard_library
+from parameterized import parameterized
 
 from cloudomate.hoster.hoster import Hoster
-from cloudomate import wallet
 from cloudomate.hoster.vps.blueangelhost import BlueAngelHost
 from cloudomate.hoster.vps.ccihosting import CCIHosting
 from cloudomate.hoster.vps.crowncloud import CrownCloud
 from cloudomate.hoster.vps.linevast import LineVast
 from cloudomate.hoster.vps.pulseservers import Pulseservers
 from cloudomate.hoster.vps.undergroundprivate import UndergroundPrivate
-from cloudomate.hoster.vps.vps_hoster import VpsHoster
 from cloudomate.hoster.vps.vpsoption import VpsOption
-from mock.mock import MagicMock
-from parameterized import parameterized
+
+standard_library.install_aliases()
 
 providers = [
     (BlueAngelHost,),
@@ -33,17 +38,6 @@ class TestHosters(unittest.TestCase):
 
 
 class TestHosterAbstract(unittest.TestCase):
-    # TODO: Move to eventual VpsHoster test
-    def test_hoster_print(self):
-        hoster = VpsHoster(None)
-        options = [self._create_option()]
-        hoster.configurations = options
-        wallet.get_rates = MagicMock(return_value={'USD': 1.1})
-        hoster.gateway = MagicMock()
-        hoster.gateway.estimate_price.return_value = 1.2
-        hoster.print_configurations()
-        wallet.get_rates.assert_called_once()
-        hoster.gateway.estimate_price.assert_called_once()
 
     def test_create_browser(self):
         browser = Hoster._create_browser()

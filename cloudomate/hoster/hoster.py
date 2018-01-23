@@ -1,12 +1,22 @@
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+
 from abc import abstractmethod, ABCMeta
 
 from fake_useragent import UserAgent
+from future import standard_library
+from future.utils import with_metaclass
 from mechanicalsoup import StatefulBrowser
 
 from cloudomate import wallet as wallet_util
 
+standard_library.install_aliases()
 
-class Hoster(metaclass=ABCMeta):
+
+class Hoster(with_metaclass(ABCMeta)):
     def __init__(self, settings):
         self._browser = self._create_browser()
         self._settings = settings

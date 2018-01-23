@@ -1,22 +1,35 @@
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+
+import io
+import os
 import subprocess
 import sys
 from argparse import ArgumentParser
-import os
+from builtins import dict
+from builtins import input
+from builtins import round
+from builtins import str
 from os import path
 
 from CaseInsensitiveDict import CaseInsensitiveDict
+from future import standard_library
 
-from cloudomate.hoster.vps.ccihosting import CCIHosting
+from cloudomate import wallet as wallet_util
+from cloudomate.hoster.vpn.azirevpn import AzireVpn
 from cloudomate.hoster.vps.blueangelhost import BlueAngelHost
+from cloudomate.hoster.vps.ccihosting import CCIHosting
 from cloudomate.hoster.vps.crowncloud import CrownCloud
 from cloudomate.hoster.vps.linevast import LineVast
 from cloudomate.hoster.vps.pulseservers import Pulseservers
 from cloudomate.hoster.vps.undergroundprivate import UndergroundPrivate
-from cloudomate.hoster.vpn.azirevpn import AzireVpn
-from cloudomate.util.settings import Settings
 from cloudomate.util.fakeuserscraper import UserScraper
+from cloudomate.util.settings import Settings
 from cloudomate.wallet import Wallet
-from cloudomate import wallet as wallet_util
+
+standard_library.install_aliases()
 
 
 def _map_providers_to_dict(provider_list):
@@ -215,15 +228,21 @@ def status(args):
     s = p.get_status()
 
     if args.type == "vps":
-        row = "{:20}" * 5
-        print(row.format("Memory used (GB)", "Storage used (GB)", "Bandwidth used (GB)", "Online", "Expiration"))
-        print(row.format('{:.2f}/{:.2f}'.format(s.memory.used, s.memory.total),
-                         '{:.2f}/{:.2f}'.format(s.storage.used, s.storage.total),
-                         '{:.2f}/{:.2f}'.format(s.bandwidth.used, s.bandwidth.total),
-                         str(s.online),
-                         s.expiration.isoformat()
-                         ))
-
+        # If we don't currently support usage statistics for this provider
+        if s.memory.used == -1.0:
+            row = "{:20}" * 2
+            print(row.format("Online", "Expiration"))
+            print(row.format(str(s.online), s.expiration.isoformat()))
+        else:
+            row = "{:20}" * 5
+            print(row.format("Memory used (GB)", "Storage used (GB)", "Bandwidth used (GB)", "Online", "Expiration"))
+            print(row.format(
+                '{:.2f}/{:.2f}'.format(s.memory.used, s.memory.total),
+                '{:.2f}/{:.2f}'.format(s.storage.used, s.storage.total),
+                '{:.2f}/{:.2f}'.format(s.bandwidth.used, s.bandwidth.total),
+                str(s.online),
+                s.expiration.isoformat()
+            ))
     elif args.type == "vpn":
         row = "{:18}" * 2
         print(row.format("Online", "Expiration"))
@@ -532,11 +551,11 @@ def _save_info_vpn(info, ovpn):
     dir, _ = path.split(ovpn)
     credentials = 'credentials.conf'
 
-    with open(ovpn, 'w', encoding='utf-8') as ovpn_file:
+    with io.open(ovpn, 'w', encoding='utf-8') as ovpn_file:
         ovpn_file.write(info.ovpn + '\nauth-user-pass ' + credentials)
 
-    with open(path.join(dir, credentials), 'w', encoding='utf-8') as credentials_file:
-        credentials_file.writelines([info.username, info.password])
+    with io.open(path.join(dir, credentials), 'w', encoding='utf-8') as credentials_file:
+        credentials_file.writelines([info.username + '\n', info.password])
 
     print("Saved VPN configuration to " + ovpn)
 

@@ -1,16 +1,20 @@
 # coding=utf-8
-import json
-import sys
-import time
-import urllib.error
-import urllib.parse
-import urllib.request
-from collections import OrderedDict
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+
 import datetime
+import re
+import sys
+from builtins import round
 from collections import namedtuple
-from forex_python.converter import CurrencyRates
 
 from bs4 import BeautifulSoup
+from forex_python.converter import CurrencyRates
+from future import standard_library
+
+standard_library.install_aliases()
 
 ClientAreaService = namedtuple('ClientAreaService', ['name', 'price', 'next_due', 'status', 'url'])
 
@@ -22,31 +26,30 @@ class ClientArea(object):
     """
     ACTION_POSTFIX = '?action=services&language=english'
 
-
     def __init__(self, browser, clientarea_url, user_settings):
         self._browser = browser
         self._services = None
         self._url = clientarea_url
         self._login(user_settings.get('user', 'email'), user_settings.get('user', 'password'))
 
-
-
-
     def get_ip(self, service=None):
         if service is None:
             service = self.get_services_first()
 
-        page = self._browser.open(service.url)
+        self._browser.open(service.url)
         soup = self._browser.get_current_page()
         rows = soup.select('div#domain > div.row')
-        for row in rows:
-            divs = row.findAll('div')
-            if 'IP' in divs[0].strong.text:
-                return divs[1].text.strip()
+        if len(rows) > 0:
+            for row in rows:
+                divs = row.findAll('div')
+                if 'IP' in divs[0].strong.text:
+                    return divs[1].text.strip()
+        else:
+            return re.search(r'\b((?:\d{1,3}\.){3}\d{1,3})\b', soup.text).group(0)
 
     def get_services(self):
         if self._services is None:
-            response = self._browser.open(self._url + self.ACTION_POSTFIX)
+            self._browser.open(self._url + self.ACTION_POSTFIX)
             soup = self._browser.get_current_page()
             rows = soup.select('table#tableServicesList tbody tr')
             self._services = [self._parse_service_row(row) for row in rows]
@@ -63,7 +66,7 @@ class ClientArea(object):
 
         price = columns[1].text
         i = price.index('.')
-        p = float(price[1:i+3])
+        p = float(price[1:i + 3])
         if 'EUR' in price:
             c = CurrencyRates()
             usd = c.convert("EUR", "USD", p)
@@ -98,7 +101,7 @@ class ClientArea(object):
 
     #
     # Legacy methods, currently not used
-    #   
+    #
 
     def get_emails(self):
         page = self._browser.open(self._url + "?action=emails")

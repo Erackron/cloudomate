@@ -1,15 +1,17 @@
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+
 import unittest
 
-import requests
+from future import standard_library
+from parameterized import parameterized
 
-from cloudomate.hoster.hoster import Hoster
-from cloudomate import wallet
 from cloudomate.hoster.vpn.azirevpn import AzireVpn
 from cloudomate.util.settings import Settings
 
-
-from mock.mock import MagicMock
-from parameterized import parameterized
+standard_library.install_aliases()
 
 providers = [
     (AzireVpn,),
@@ -30,7 +32,6 @@ class TestHosters(unittest.TestCase):
     def test_vpn_hoster_configuration(self, hoster):
         config = hoster(self.settings).get_configuration()
         self.assertTrue(len(config) > 0)
-
 
 
 if __name__ == '__main__':

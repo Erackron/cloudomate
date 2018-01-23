@@ -1,16 +1,28 @@
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+
 import itertools
 import json
 import sys
-import urllib.error
-import urllib.parse
-import urllib.request
+from builtins import int
+from builtins import round
+from builtins import super
+
+from forex_python.converter import CurrencyRates
+from future import standard_library
+from mechanicalsoup.utils import LinkNotFoundError
 
 from cloudomate.gateway.bitpay import BitPay
 from cloudomate.hoster.vps.solusvm_hoster import SolusvmHoster
-from cloudomate.hoster.vps.clientarea import ClientArea
 from cloudomate.hoster.vps.vps_hoster import VpsOption
-from forex_python.converter import CurrencyRates
-from mechanicalsoup.utils import LinkNotFoundError
+
+standard_library.install_aliases()
+if sys.version_info > (3, 0):
+    pass
+else:
+    pass
 
 
 class LineVast(SolusvmHoster):
@@ -165,4 +177,3 @@ class LineVast(SolusvmHoster):
         if data['success'] and data['success'] == '1':
             return True
         return False
-

@@ -1,10 +1,20 @@
-import urllib.error
-import urllib.parse
-import urllib.request
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+
+import sys
 
 from bs4 import BeautifulSoup
+from future import standard_library
 
 from cloudomate.gateway.gateway import Gateway, PaymentInfo
+
+standard_library.install_aliases()
+if sys.version_info > (3, 0):
+    from urllib.request import urlopen
+else:
+    from urllib2 import urlopen
 
 
 class UndergroundPrivate(Gateway):
@@ -20,7 +30,7 @@ class UndergroundPrivate(Gateway):
         :return: a tuple of the amount in BitCoin along with the address
         """
 
-        response = urllib.request.urlopen(url)
+        response = urlopen(url)
         soup = BeautifulSoup(response, 'lxml')
 
         amount = soup.select_one('input.btcamount')

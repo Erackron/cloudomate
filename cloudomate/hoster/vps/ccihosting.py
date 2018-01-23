@@ -1,12 +1,22 @@
-import sys
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+
 import re
+import sys
+from builtins import int
+from builtins import super
+
+from future import standard_library
 
 from cloudomate.gateway.coinbase import Coinbase
 from cloudomate.hoster.vps.solusvm_hoster import SolusvmHoster
 from cloudomate.hoster.vps.vps_hoster import VpsOption
-from cloudomate.hoster.vps.vps_hoster import VpsStatusResource
 from cloudomate.hoster.vps.vps_hoster import VpsStatus
-from cloudomate.hoster.vps.clientarea import ClientArea
+from cloudomate.hoster.vps.vps_hoster import VpsStatusResource
+
+standard_library.install_aliases()
 
 
 class CCIHosting(SolusvmHoster):
@@ -44,7 +54,7 @@ class CCIHosting(SolusvmHoster):
     @classmethod
     def get_options(cls):
         browser = cls._create_browser()
-        browser.open(self.OPTIONS_URL)
+        browser.open(cls.OPTIONS_URL)
         return list(cls._parse_options(browser.get_current_page()))
 
     def get_status(self):
@@ -53,13 +63,14 @@ class CCIHosting(SolusvmHoster):
         # Usage
         page = self._browser.open(status.clientarea.url)
         matches = re.findall(r'([\d.]+) (KB|MB|GB|TB) of ([\d.]+) (KB|MB|GB|TB) Used', page.text)
-        usage = (self._convert_gigabyte(matches[1][0], matches[1][1]),    # Memory used
-                 self._convert_gigabyte(matches[1][2], matches[1][3]),    # Memory total
-                 self._convert_gigabyte(matches[0][0], matches[0][1]),    # Storage used
-                 self._convert_gigabyte(matches[0][2], matches[0][3]),    # Storage total
-                 self._convert_gigabyte(matches[2][0], matches[2][1]),    # Bandwidth used
-                 self._convert_gigabyte(matches[2][2], matches[2][3])     # Bandwidth total
-                )
+        usage = (
+            self._convert_gigabyte(matches[1][0], matches[1][1]),  # Memory used
+            self._convert_gigabyte(matches[1][2], matches[1][3]),  # Memory total
+            self._convert_gigabyte(matches[0][0], matches[0][1]),  # Storage used
+            self._convert_gigabyte(matches[0][2], matches[0][3]),  # Storage total
+            self._convert_gigabyte(matches[2][0], matches[2][1]),  # Bandwidth used
+            self._convert_gigabyte(matches[2][2], matches[2][3])  # Bandwidth total
+        )
 
         memory = VpsStatusResource(usage[0], usage[1])
         storage = VpsStatusResource(usage[2], usage[3])
@@ -142,4 +153,3 @@ class CCIHosting(SolusvmHoster):
             connection=0.01,  # See FAQ at https://www.ccihosting.com/offshore-vps.html
             purchase_url=column.find('a')['href']
         )
-

@@ -1,15 +1,28 @@
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+
 import os
+import sys
 import unittest
-import urllib.error
-import urllib.parse
-import urllib.request
+from builtins import open
 
 import requests
+from future import standard_library
+from mock import patch, Mock
+
 from cloudomate.gateway.bitpay import BitPay
 from cloudomate.gateway.coinbase import Coinbase
-from unittest.mock import patch, Mock
-
 from cloudomate.util.bitcoinaddress import validate
+
+standard_library.install_aliases()
+if sys.version_info > (3, 0):
+    from urllib.request import urlopen
+    import urllib
+else:
+    from urllib2 import urlopen
+    import urllib2
 
 
 class TestCoinbase(unittest.TestCase):
@@ -40,8 +53,13 @@ class TestBitPay(unittest.TestCase):
         data = html_file.read().encode('utf-8')
         response = requests.Response()
         response.read = Mock(return_value=data)
-        with patch.object(urllib.request, 'urlopen', return_value=response):
-            cls.amount, cls.address = BitPay.extract_info('https://bitpay.com/invoice?id=KXnWTnNsNUrHK2PEp8TpDC')
+        # with Mock(return_value = response) as urlopen:
+        if sys.version_info > (3, 0):
+            with patch.object(urllib.request, 'urlopen', return_value=response):
+                cls.amount, cls.address = BitPay.extract_info('https://bitpay.com/invoice?id=KXnWTnNsNUrHK2PEp8TpDC')
+        else:
+            with patch.object(urllib2, 'urlopen', return_value=response):
+                cls.amount, cls.address = BitPay.extract_info('https://bitpay.com/invoice?id=KXnWTnNsNUrHK2PEp8TpDC')
 
     def test_address(self):
         self.assertEqual(self.address, '12cWmVndhmD56dzYcRuYka3Vpgjb3qdRoL')

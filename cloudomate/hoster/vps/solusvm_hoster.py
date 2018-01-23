@@ -1,15 +1,22 @@
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+
 import sys
-
-from mechanicalsoup import LinkNotFoundError
-from bs4 import BeautifulSoup
 from abc import abstractmethod
-import datetime
 
+from bs4 import BeautifulSoup
+from future import standard_library
+from mechanicalsoup import LinkNotFoundError
+
+from cloudomate.hoster.vps.clientarea import ClientArea
 from cloudomate.hoster.vps.vps_hoster import VpsConfiguration
 from cloudomate.hoster.vps.vps_hoster import VpsHoster
-from cloudomate.hoster.vps.vps_hoster import VpsStatusResourceNone
 from cloudomate.hoster.vps.vps_hoster import VpsStatus
-from cloudomate.hoster.vps.clientarea import ClientArea
+from cloudomate.hoster.vps.vps_hoster import VpsStatusResourceNone
+
+standard_library.install_aliases()
 
 
 class SolusvmHoster(VpsHoster):
@@ -46,7 +53,14 @@ class SolusvmHoster(VpsHoster):
         online = True if service.status == 'active' else False
         expiration = service.next_due
 
-        return VpsStatus(VpsStatusResourceNone, VpsStatusResourceNone, VpsStatusResourceNone, online, expiration, service)
+        return VpsStatus(
+            VpsStatusResourceNone,
+            VpsStatusResourceNone,
+            VpsStatusResourceNone,
+            online,
+            expiration,
+            service
+        )
 
     '''
     Static methods that must be overwritten by subclasses
