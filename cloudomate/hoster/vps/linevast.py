@@ -91,8 +91,6 @@ class LineVast(SolusvmHoster):
         self._browser.submit_selected()
         self.pay(wallet, self.get_gateway(), self._browser.get_url())
 
-<<<<<<< HEAD
-=======
     def set_root_password(self, password):
         clientarea = ClientArea(self._browser, self.get_clientarea_url(), self._settings)
         info = clientarea.get_service_info()
@@ -122,7 +120,6 @@ class LineVast(SolusvmHoster):
         else:
             print("Password changed successfully")
 
->>>>>>> b45d26ecef85b5b448e91123643be16fdbd2f2f7
     '''
     Hoster-specific methods that are needed to perform the actions
     '''
