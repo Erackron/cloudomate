@@ -98,13 +98,26 @@ class ClientArea(object):
         Login into the clientarea. Exits program if unsuccesful.
         :return: The clientarea homepage on succesful login.
         """
-        self._browser.open(self._url)
-        self._browser.select_form('.logincontainer form')
-        self._browser['username'] = email
-        self._browser['password'] = password
-        page = self._browser.submit_selected()
-        if "incorrect=true" in page.url:
-            print("Login failure")
+        service = self.get_specified_or_active_service()
+        self._ensure_active(service)
+        data = {
+            'newrootpassword': password,
+            'rootpassword': 'Change'
+        }
+        data = urlencode(data)
+        url = self.clientarea_url.replace('clientarea', 'rootpassword') + '?id=' + service['id']
+        page = self.browser.open(url, data)
+        if 'Password Updated' in page.get_data():
+            print("Password changed successfully")
+            return True
+        else:
+            print("Setting password failed")
+            return False
+
+    @staticmethod
+    def _ensure_active(service):
+        if service['status'] != 'active':
+            print(("Service is %s" % service['status']))
             sys.exit(2)
         self.home_page = page
 

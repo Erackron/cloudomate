@@ -91,6 +91,38 @@ class LineVast(SolusvmHoster):
         self._browser.submit_selected()
         self.pay(wallet, self.get_gateway(), self._browser.get_url())
 
+<<<<<<< HEAD
+=======
+    def set_root_password(self, password):
+        clientarea = ClientArea(self._browser, self.get_clientarea_url(), self._settings)
+        info = clientarea.get_service_info()
+        self._browser.open("https://vm.linevast.de/login.php")
+        self._browser.select_form(nr=0)
+        self._browser.form['username'] = info[2]
+        self._browser.form['password'] = info[3]
+        self._browser.form.new_control('text', 'Submit', {'name': 'Submit', 'value': '1'})
+        self._browser.form.new_control('text', 'act', {'name': 'act', 'value': 'login'})
+        self._browser.form.method = "POST"
+        page = self._browser.submit()
+        if not self._check_login(page.get_data()):
+            print("Login failed")
+            sys.exit(2)
+        self._browser.open("https://vm.linevast.de/home.php")
+        vi = self._extract_vi_from_links(self._browser.links())
+        data = {
+            'act': 'rootpassword',
+            'opt': password,
+            'vi': vi
+        }
+        data = urlencode(data)
+        page = self._browser.open("https://vm.linevast.de/_vm_remote.php", data)
+        if not self._check_set_rootpw(page.get_data()):
+            print("Setting password failed")
+            sys.exit(2)
+        else:
+            print("Password changed successfully")
+
+>>>>>>> b45d26ecef85b5b448e91123643be16fdbd2f2f7
     '''
     Hoster-specific methods that are needed to perform the actions
     '''
