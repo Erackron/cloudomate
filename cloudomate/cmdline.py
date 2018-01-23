@@ -547,7 +547,7 @@ def _save_info_vpn(info, ovpn):
         ovpn_file.write(info.ovpn + '\nauth-user-pass ' + credentials)
 
     with io.open(path.join(dir, credentials), 'w', encoding='utf-8') as credentials_file:
-        credentials_file.writelines([info.username, info.password])
+        credentials_file.writelines([info.username + '\n', info.password])
 
     print("Saved VPN configuration to " + ovpn)
 
