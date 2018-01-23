@@ -52,7 +52,7 @@ class CCIHosting(SolusvmHoster):
     @classmethod
     def get_options(cls):
         browser = cls._create_browser()
-        browser.open(self.OPTIONS_URL)
+        browser.open(cls.OPTIONS_URL)
         return list(cls._parse_options(browser.get_current_page()))
 
     def get_status(self):
