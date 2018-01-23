@@ -1,28 +1,28 @@
+from __future__ import absolute_import
+from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
-from __future__ import division
-from __future__ import absolute_import
-from builtins import super
-from builtins import round
-from builtins import int
-from future import standard_library
-standard_library.install_aliases()
+
 import itertools
 import json
 import sys
-if sys.version_info > (3,0):
-    from urllib.request import urlopen
-    from urllib.parse import urlencode
-else:
-    from urllib2 import urlopen
-    from urllib import urlencode
+from builtins import int
+from builtins import round
+from builtins import super
+
+from forex_python.converter import CurrencyRates
+from future import standard_library
+from mechanicalsoup.utils import LinkNotFoundError
 
 from cloudomate.gateway.bitpay import BitPay
 from cloudomate.hoster.vps.solusvm_hoster import SolusvmHoster
-from cloudomate.hoster.vps.clientarea import ClientArea
 from cloudomate.hoster.vps.vps_hoster import VpsOption
-from forex_python.converter import CurrencyRates
-from mechanicalsoup.utils import LinkNotFoundError
+
+standard_library.install_aliases()
+if sys.version_info > (3, 0):
+    pass
+else:
+    pass
 
 
 class LineVast(SolusvmHoster):
@@ -90,35 +90,6 @@ class LineVast(SolusvmHoster):
         self._browser.select_form(nr=0)  # Go to payment form
         self._browser.submit_selected()
         self.pay(wallet, self.get_gateway(), self._browser.get_url())
-
-    def set_root_password(self, password):
-        clientarea = ClientArea(self._browser, self.get_clientarea_url(), self._settings)
-        info = clientarea.get_service_info()
-        self._browser.open("https://vm.linevast.de/login.php")
-        self._browser.select_form(nr=0)
-        self._browser.form['username'] = info[2]
-        self._browser.form['password'] = info[3]
-        self._browser.form.new_control('text', 'Submit', {'name': 'Submit', 'value': '1'})
-        self._browser.form.new_control('text', 'act', {'name': 'act', 'value': 'login'})
-        self._browser.form.method = "POST"
-        page = self._browser.submit()
-        if not self._check_login(page.get_data()):
-            print("Login failed")
-            sys.exit(2)
-        self._browser.open("https://vm.linevast.de/home.php")
-        vi = self._extract_vi_from_links(self._browser.links())
-        data = {
-            'act': 'rootpassword',
-            'opt': password,
-            'vi': vi
-        }
-        data = urlencode(data)
-        page = self._browser.open("https://vm.linevast.de/_vm_remote.php", data)
-        if not self._check_set_rootpw(page.get_data()):
-            print("Setting password failed")
-            sys.exit(2)
-        else:
-            print("Password changed successfully")
 
     '''
     Hoster-specific methods that are needed to perform the actions
@@ -206,4 +177,3 @@ class LineVast(SolusvmHoster):
         if data['success'] and data['success'] == '1':
             return True
         return False
-

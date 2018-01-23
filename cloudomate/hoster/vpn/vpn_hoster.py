@@ -1,18 +1,20 @@
-from __future__ import unicode_literals
-from __future__ import print_function
-from __future__ import division
 from __future__ import absolute_import
-from future import standard_library
-standard_library.install_aliases()
-from abc import abstractmethod
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
 
-from cloudomate.hoster.hoster import Hoster
+from abc import abstractmethod
 from collections import namedtuple
 
+from future import standard_library
+
+from cloudomate.hoster.hoster import Hoster
+
+standard_library.install_aliases()
 
 VpnConfiguration = namedtuple('VpnConfiguration', ['username', 'password', 'ovpn'])
 VpnOption = namedtuple('VpnOption', ['name', 'protocol', 'price', 'bandwidth', 'speed'])  # Price in USD
-VpnStatus = namedtuple('VpnStatus', ['online', 'expiration'])   # Online is a boolean, expiration an ISO datetime
+VpnStatus = namedtuple('VpnStatus', ['online', 'expiration'])  # Online is a boolean, expiration an ISO datetime
 
 
 class VpnHoster(Hoster):

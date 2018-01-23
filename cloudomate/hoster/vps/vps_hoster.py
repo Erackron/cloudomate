@@ -1,32 +1,34 @@
-from __future__ import unicode_literals
-from __future__ import print_function
-from __future__ import division
 from __future__ import absolute_import
-from future import standard_library
-standard_library.install_aliases()
-from abc import abstractmethod
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
 
-from cloudomate.hoster.hoster import Hoster
+from abc import abstractmethod
 from collections import namedtuple
 
+from future import standard_library
+
+from cloudomate.hoster.hoster import Hoster
+
+standard_library.install_aliases()
 
 VpsConfiguration = namedtuple('VpsConfiguration', ['ip', 'root_password'])
 VpsOption = namedtuple('VpsOption', ['name',
                                      'cores',
-                                     'memory',          # Memory in GB
-                                     'storage',         # Storage in GB
-                                     'bandwidth',       # Bandwidth in GB
-                                     'connection',      # Connection speed in Gbps
-                                     'price',           # Price in USD
+                                     'memory',  # Memory in GB
+                                     'storage',  # Storage in GB
+                                     'bandwidth',  # Bandwidth in GB
+                                     'connection',  # Connection speed in Gbps
+                                     'price',  # Price in USD
                                      'purchase_url'])
 VpsStatusResource = namedtuple('VpsStatusResource', ['used', 'total'])
-VpsStatusResourceNone  = VpsStatusResource(-1, -1)
-VpsStatus = namedtuple('VpsStatus', ['memory',          # Memory VpsStatusResource in GB
-                                     'storage',         # Storage VpsStatusResource in GB
-                                     'bandwidth',       # Bandwidth VpsStatusResource in GB
-                                     'online',          # Boolean
-                                     'expiration',      # Python Datetime object
-                                     'clientarea'])     # Service information retrieved from the ClientArea (for overriding)
+VpsStatusResourceNone = VpsStatusResource(-1, -1)
+VpsStatus = namedtuple('VpsStatus', ['memory',  # Memory VpsStatusResource in GB
+                                     'storage',  # Storage VpsStatusResource in GB
+                                     'bandwidth',  # Bandwidth VpsStatusResource in GB
+                                     'online',  # Boolean
+                                     'expiration',  # Python Datetime object
+                                     'clientarea'])  # Service info retrieved from the ClientArea (for overriding)
 
 
 class VpsHoster(Hoster):
@@ -54,4 +56,3 @@ class VpsHoster(Hoster):
         :return: Returns VpsStatus of the VPS Hoster instance
         """
         pass
-

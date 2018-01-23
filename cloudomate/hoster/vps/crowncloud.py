@@ -1,20 +1,18 @@
+from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
-from __future__ import absolute_import
-from builtins import int
-from future import standard_library
-standard_library.install_aliases()
-import re
-import sys
-from collections import OrderedDict
 
-from bs4 import BeautifulSoup
+from builtins import int
+
+from future import standard_library
+from mechanicalsoup import LinkNotFoundError
 
 from cloudomate.gateway.bitpay import BitPay
 from cloudomate.hoster.vps.solusvm_hoster import SolusvmHoster
 from cloudomate.hoster.vps.vps_hoster import VpsOption
-from mechanicalsoup import LinkNotFoundError
+
+standard_library.install_aliases()
 
 
 class CrownCloud(SolusvmHoster):
@@ -163,4 +161,3 @@ class CrownCloud(SolusvmHoster):
         # Redirect to BitPay
         self._browser.select_form(nr=0)
         return self._browser.submit_selected()
-

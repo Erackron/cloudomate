@@ -1,33 +1,35 @@
+from __future__ import absolute_import
+from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
-from __future__ import division
-from __future__ import absolute_import
-from builtins import round
-from builtins import dict
-from builtins import input
-from builtins import str
-from future import standard_library
-standard_library.install_aliases()
+
+import io
+import os
 import subprocess
 import sys
 from argparse import ArgumentParser
-import os
+from builtins import dict
+from builtins import input
+from builtins import round
+from builtins import str
 from os import path
-import io
 
 from CaseInsensitiveDict import CaseInsensitiveDict
+from future import standard_library
 
-from cloudomate.hoster.vps.ccihosting import CCIHosting
+from cloudomate import wallet as wallet_util
+from cloudomate.hoster.vpn.azirevpn import AzireVpn
 from cloudomate.hoster.vps.blueangelhost import BlueAngelHost
+from cloudomate.hoster.vps.ccihosting import CCIHosting
 from cloudomate.hoster.vps.crowncloud import CrownCloud
 from cloudomate.hoster.vps.linevast import LineVast
 from cloudomate.hoster.vps.pulseservers import Pulseservers
 from cloudomate.hoster.vps.undergroundprivate import UndergroundPrivate
-from cloudomate.hoster.vpn.azirevpn import AzireVpn
-from cloudomate.util.settings import Settings
 from cloudomate.util.fakeuserscraper import UserScraper
+from cloudomate.util.settings import Settings
 from cloudomate.wallet import Wallet
-from cloudomate import wallet as wallet_util
+
+standard_library.install_aliases()
 
 
 def _map_providers_to_dict(provider_list):

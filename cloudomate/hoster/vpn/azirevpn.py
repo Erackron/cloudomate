@@ -1,19 +1,21 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
-from __future__ import division
-from __future__ import absolute_import
+
+import datetime
+import sys
 from builtins import round
+
+import requests
+from forex_python.converter import CurrencyRates
 from future import standard_library
-standard_library.install_aliases()
-from cloudomate import wallet as wallet_util
-from cloudomate.gateway import bitpay
+
 from cloudomate.gateway.bitpay import BitPay
 from cloudomate.hoster.vpn import vpn_hoster
-import datetime
-from forex_python.converter import CurrencyRates
-import requests
-import sys
+
+standard_library.install_aliases()
 
 
 class AzireVpn(vpn_hoster.VpnHoster):

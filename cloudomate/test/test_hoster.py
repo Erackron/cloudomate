@@ -1,25 +1,24 @@
-from __future__ import unicode_literals
-from __future__ import print_function
-from __future__ import division
 from __future__ import absolute_import
-from future import standard_library
-standard_library.install_aliases()
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+
 import unittest
 
 import requests
+from future import standard_library
+from parameterized import parameterized
 
 from cloudomate.hoster.hoster import Hoster
-from cloudomate import wallet
 from cloudomate.hoster.vps.blueangelhost import BlueAngelHost
 from cloudomate.hoster.vps.ccihosting import CCIHosting
 from cloudomate.hoster.vps.crowncloud import CrownCloud
 from cloudomate.hoster.vps.linevast import LineVast
 from cloudomate.hoster.vps.pulseservers import Pulseservers
 from cloudomate.hoster.vps.undergroundprivate import UndergroundPrivate
-from cloudomate.hoster.vps.vps_hoster import VpsHoster
 from cloudomate.hoster.vps.vpsoption import VpsOption
-from mock.mock import MagicMock
-from parameterized import parameterized
+
+standard_library.install_aliases()
 
 providers = [
     (BlueAngelHost,),

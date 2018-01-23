@@ -1,21 +1,23 @@
-from __future__ import unicode_literals
-from __future__ import print_function
-from __future__ import division
 from __future__ import absolute_import
-from builtins import super
-from builtins import int
-from future import standard_library
-standard_library.install_aliases()
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+
 import itertools
 import re
 import time
+from builtins import int
+from builtins import super
+
+from future import standard_library
 
 from cloudomate.gateway.bitpay import BitPay
 from cloudomate.hoster.vps.solusvm_hoster import SolusvmHoster
-from cloudomate.hoster.vps.clientarea import ClientArea
 from cloudomate.hoster.vps.vps_hoster import VpsOption
-from cloudomate.hoster.vps.vps_hoster import VpsStatusResource
 from cloudomate.hoster.vps.vps_hoster import VpsStatus
+from cloudomate.hoster.vps.vps_hoster import VpsStatusResource
+
+standard_library.install_aliases()
 
 
 class BlueAngelHost(SolusvmHoster):
@@ -75,9 +77,11 @@ class BlueAngelHost(SolusvmHoster):
         page = self._browser.open('{}?vserverid={}&_={}'.format(self.CLIENT_DATA_URL, identifier, millis))
         data = page.json()
 
-        memory = VpsStatusResource(self._convert_gigabyte(data['memoryused']), self._convert_gigabyte(data['memorytotal']))
+        memory = VpsStatusResource(self._convert_gigabyte(data['memoryused']),
+                                   self._convert_gigabyte(data['memorytotal']))
         storage = VpsStatusResource(self._convert_gigabyte(data['hddused']), self._convert_gigabyte(data['hddtotal']))
-        bandwidth = VpsStatusResource(self._convert_gigabyte(data['bandwidthused']), self._convert_gigabyte(data['bandwidthtotal']))
+        bandwidth = VpsStatusResource(self._convert_gigabyte(data['bandwidthused']),
+                                      self._convert_gigabyte(data['bandwidthtotal']))
 
         return VpsStatus(memory, storage, bandwidth, status.online, status.expiration, status.clientarea)
 
@@ -161,4 +165,3 @@ class BlueAngelHost(SolusvmHoster):
         form['configoption[72]'] = '87'  # Ubuntu
         form['configoption[73]'] = '91'  # 64 bit
         self._browser.submit_selected()
-

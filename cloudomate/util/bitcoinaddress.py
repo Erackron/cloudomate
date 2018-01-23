@@ -3,17 +3,19 @@
 Copied from:
 http://rosettacode.org/wiki/Bitcoin/address_validation#Python
 """
-from __future__ import unicode_literals
-from __future__ import print_function
-from __future__ import division
 from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
 
 from builtins import bytes
 from builtins import int
 from builtins import range
-from future import standard_library
-standard_library.install_aliases()
 from hashlib import sha256
+
+from future import standard_library
+
+standard_library.install_aliases()
 
 digits58 = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
 
@@ -54,7 +56,7 @@ def decode_base58(bitcoin_address, length):
     for char in bitcoin_address:
         try:
             n = n * 58 + digits58.index(char)
-        except:
+        except ValueError:
             msg = "Character not part of Bitcoin's base58: '%s'"
             raise ValueError(msg % (char,))
     try:

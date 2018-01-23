@@ -1,12 +1,15 @@
-from __future__ import unicode_literals
-from __future__ import print_function
-from __future__ import division
 from __future__ import absolute_import
-from future import standard_library
-standard_library.install_aliases()
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+
 import unittest
 
+from future import standard_library
+
 from cloudomate.hoster.vps.linevast import LineVast
+
+standard_library.install_aliases()
 
 
 class TestLinevast(unittest.TestCase):

@@ -1,14 +1,17 @@
-from __future__ import unicode_literals
-from __future__ import print_function
-from __future__ import division
 from __future__ import absolute_import
-from builtins import open
-from future import standard_library
-standard_library.install_aliases()
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+
 import os
 import unittest
+from builtins import open
+
+from future import standard_library
 
 from cloudomate.hoster.vps.crowncloud import CrownCloud
+
+standard_library.install_aliases()
 
 
 class TestCrownCloud(unittest.TestCase):

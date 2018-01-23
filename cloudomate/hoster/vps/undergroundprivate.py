@@ -1,21 +1,18 @@
-from __future__ import unicode_literals
-from __future__ import print_function
-from __future__ import division
 from __future__ import absolute_import
-from builtins import int
-from future import standard_library
-standard_library.install_aliases()
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+
 import sys
+from builtins import int
 
-from bs4 import BeautifulSoup
-from cloudomate.gateway import coinbase
+from future import standard_library
+
 from cloudomate.gateway.undergroundprivate import UndergroundPrivate as UndergroundPrivateGateway
-from cloudomate.hoster.vps.solusvm_hoster import SolusvmHoster
-from cloudomate.hoster.vps.clientarea import ClientArea
-from cloudomate.hoster.vps.vpsoption import VpsOption
-from cloudomate.wallet import determine_currency
-
 from cloudomate.hoster.vps import vps_hoster
+from cloudomate.hoster.vps.solusvm_hoster import SolusvmHoster
+
+standard_library.install_aliases()
 
 
 class UndergroundPrivate(SolusvmHoster):
@@ -71,12 +68,11 @@ class UndergroundPrivate(SolusvmHoster):
                 o.append(option)
         return o
 
-
     def purchase(self, wallet, option):
         self._browser.open(option.purchase_url)
         self._submit_server_form()
         self._browser.open(self.CART_URL)
-        page = self._submit_user_form()
+        self._submit_user_form()
 
         # Retrieve the payment URL from an iFrame
         soup = self._browser.get_current_page()
@@ -140,4 +136,3 @@ class UndergroundPrivate(SolusvmHoster):
         # Let SolusVM class handle the rest
         gateway = self.get_gateway()
         return self._fill_user_form(gateway.get_name(), errorbox_class='errorbox')
-

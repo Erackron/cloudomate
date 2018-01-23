@@ -1,24 +1,27 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
-from __future__ import absolute_import
-from builtins import str
-from builtins import object
-from future import standard_library
-standard_library.install_aliases()
+
 import json
 import os
 import subprocess
 import sys
-if sys.version_info > (3,0):
+from builtins import object
+from builtins import str
+
+from forex_python.bitcoin import BtcConverter
+from future import standard_library
+from mechanicalsoup import StatefulBrowser
+
+standard_library.install_aliases()
+
+if sys.version_info > (3, 0):
     from urllib.request import urlopen
 else:
     from urllib2 import urlopen
-
-from forex_python.bitcoin import BtcConverter
-from mechanicalsoup import StatefulBrowser
 
 AVG_TX_SIZE = 226
 SATOSHI_TO_BTC = 0.00000001
@@ -159,7 +162,7 @@ class Wallet(object):
         if self.get_balance() < amount + tx_fee:
             print('Not enough funds')
             return
-        
+
         transaction_hex = self.wallet_handler.create_transaction(amount, address, fee)
         success, transaction_hash = self.wallet_handler.broadcast(transaction_hex)
         if not success:
@@ -195,7 +198,7 @@ class ElectrumWalletHandler(object):
         if self.not_running_before:
             subprocess.call(self.command + ['daemon', 'start'])
 
-        if not wallet_path is None:
+        if wallet_path is not None:
             print('Using wallet: ', wallet_path)
         self._command(['daemon', 'load_wallet'], output=False)
 
@@ -249,7 +252,7 @@ class ElectrumWalletHandler(object):
 
     def _command(self, c, output=True):
         command = self.command + c
-        if not self._wallet_path is None:
+        if self._wallet_path is not None:
             command += ['-w', self._wallet_path]
 
         if output:

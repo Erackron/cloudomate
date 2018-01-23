@@ -1,15 +1,17 @@
+from __future__ import absolute_import
+from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
-from __future__ import division
-from __future__ import absolute_import
-from builtins import str
+
 from builtins import open
-from future import standard_library
-standard_library.install_aliases()
+from builtins import str
 from configparser import ConfigParser
 from configparser import NoOptionError
 
 from appdirs import *
+from future import standard_library
+
+standard_library.install_aliases()
 
 
 class Settings(object):

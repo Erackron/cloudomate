@@ -1,28 +1,23 @@
 # coding=utf-8
+from __future__ import absolute_import
+from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
-from __future__ import division
-from __future__ import absolute_import
-from builtins import int
-from builtins import round
-from builtins import str
-from future import standard_library
-standard_library.install_aliases()
-import json
-import sys
-import time
-if sys.version_info > (3,0):
-    from urllib.request import urlopen
-    from urllib.parse import urlencode
-else:
-    from urllib2 import urlopen
-    from urllib import urlencode
-from collections import OrderedDict
+
 import datetime
+import sys
+from builtins import round
 from collections import namedtuple
-from forex_python.converter import CurrencyRates
 
 from bs4 import BeautifulSoup
+from forex_python.converter import CurrencyRates
+from future import standard_library
+
+standard_library.install_aliases()
+if sys.version_info > (3, 0):
+    from urllib.parse import urlencode
+else:
+    from urllib import urlencode
 
 ClientAreaService = namedtuple('ClientAreaService', ['name', 'price', 'next_due', 'status', 'url'])
 
@@ -34,21 +29,17 @@ class ClientArea(object):
     """
     ACTION_POSTFIX = '?action=services&language=english'
 
-
     def __init__(self, browser, clientarea_url, user_settings):
         self._browser = browser
         self._services = None
         self._url = clientarea_url
         self._login(user_settings.get('user', 'email'), user_settings.get('user', 'password'))
 
-
-
-
     def get_ip(self, service=None):
         if service is None:
             service = self.get_services_first()
 
-        page = self._browser.open(service.url)
+        self._browser.open(service.url)
         soup = self._browser.get_current_page()
         rows = soup.select('div#domain > div.row')
         for row in rows:
@@ -58,7 +49,7 @@ class ClientArea(object):
 
     def get_services(self):
         if self._services is None:
-            response = self._browser.open(self._url + self.ACTION_POSTFIX)
+            self._browser.open(self._url + self.ACTION_POSTFIX)
             soup = self._browser.get_current_page()
             rows = soup.select('table#tableServicesList tbody tr')
             self._services = [self._parse_service_row(row) for row in rows]
@@ -75,7 +66,7 @@ class ClientArea(object):
 
         price = columns[1].text
         i = price.index('.')
-        p = float(price[1:i+3])
+        p = float(price[1:i + 3])
         if 'EUR' in price:
             c = CurrencyRates()
             usd = c.convert("EUR", "USD", p)
@@ -98,26 +89,13 @@ class ClientArea(object):
         Login into the clientarea. Exits program if unsuccesful.
         :return: The clientarea homepage on succesful login.
         """
-        service = self.get_specified_or_active_service()
-        self._ensure_active(service)
-        data = {
-            'newrootpassword': password,
-            'rootpassword': 'Change'
-        }
-        data = urlencode(data)
-        url = self.clientarea_url.replace('clientarea', 'rootpassword') + '?id=' + service['id']
-        page = self.browser.open(url, data)
-        if 'Password Updated' in page.get_data():
-            print("Password changed successfully")
-            return True
-        else:
-            print("Setting password failed")
-            return False
-
-    @staticmethod
-    def _ensure_active(service):
-        if service['status'] != 'active':
-            print(("Service is %s" % service['status']))
+        self._browser.open(self._url)
+        self._browser.select_form('.logincontainer form')
+        self._browser['username'] = email
+        self._browser['password'] = password
+        page = self._browser.submit_selected()
+        if "incorrect=true" in page.url:
+            print("Login failure")
             sys.exit(2)
         self.home_page = page
 

@@ -1,14 +1,18 @@
-from __future__ import unicode_literals
-from __future__ import print_function
-from __future__ import division
 from __future__ import absolute_import
-from future import standard_library
-standard_library.install_aliases()
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+
 from abc import abstractmethod, ABCMeta
 from collections import namedtuple
 
-PaymentInfo = namedtuple('PaymentInfo', ['amount', 'address'])
+from future import standard_library
 from future.utils import with_metaclass
+
+standard_library.install_aliases()
+
+PaymentInfo = namedtuple('PaymentInfo', ['amount', 'address'])
+
 
 class Gateway(with_metaclass(ABCMeta)):
     @staticmethod

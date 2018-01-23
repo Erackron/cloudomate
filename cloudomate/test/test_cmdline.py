@@ -1,18 +1,21 @@
-from __future__ import unicode_literals
-from __future__ import print_function
-from __future__ import division
 from __future__ import absolute_import
-from future import standard_library
-standard_library.install_aliases()
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+
 import unittest
 from argparse import Namespace
+
+from future import standard_library
+from mock.mock import MagicMock
 
 import cloudomate.cmdline as cmdline
 from cloudomate.hoster.vpn.azirevpn import AzireVpn
 from cloudomate.hoster.vps.linevast import LineVast
 from cloudomate.hoster.vps.vpsoption import VpsOption
 from cloudomate.util.settings import Settings
-from mock.mock import MagicMock
+
+standard_library.install_aliases()
 
 
 class TestCmdLine(unittest.TestCase):

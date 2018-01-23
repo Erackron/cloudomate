@@ -1,18 +1,20 @@
-from __future__ import unicode_literals
-from __future__ import print_function
-from __future__ import division
 from __future__ import absolute_import
-from future import standard_library
-standard_library.install_aliases()
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+
 import sys
-if sys.version_info > (3,0):
+
+from bs4 import BeautifulSoup
+from future import standard_library
+
+from cloudomate.gateway.gateway import Gateway, PaymentInfo
+
+standard_library.install_aliases()
+if sys.version_info > (3, 0):
     from urllib.request import urlopen
 else:
     from urllib2 import urlopen
-
-from bs4 import BeautifulSoup
-
-from cloudomate.gateway.gateway import Gateway, PaymentInfo
 
 
 class UndergroundPrivate(Gateway):
